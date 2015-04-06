@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">ping</string>
     <string name="title_host_detail">Host Detail</string>
+    <string name="updated_unknown">unknown</string>
+    <string name="fragment_host_list_add_hint">Add Host</string>
+
+    <!-- Text shown by list fragment when waiting for data to display. -->
+    <string name="loading">Loading\u2026</string>
+    <string name="fragment_host_list_add_action_label">Add</string>
 </resources>

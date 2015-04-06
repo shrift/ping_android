@@ -1,11 +1,21 @@
 package com.bubbletastic.android.ping;
 
 import android.app.Activity;
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A list fragment representing a list of Hosts. This fragment
@@ -16,7 +26,7 @@ import android.widget.ListView;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class HostListFragment extends ListFragment {
+public class HostListFragment extends Fragment {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -34,6 +44,13 @@ public class HostListFragment extends ListFragment {
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+    private ListView listView;
+    private List<Host> hosts;
+    private HostAdapter adapter;
+
+    public ListView getListView() {
+        return listView;
+    }
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -67,9 +84,39 @@ public class HostListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hosts = new ArrayList<Host> (Arrays.asList(new Host("a;lkajsdf;lkjsadfjk"), new Host("snarkletastic.com"), new Host("bubbletastic.com"), new Host("brendanmartens.com"), new Host("8.8.8.8")));
+        Collections.sort(hosts);
+    }
 
-        Host[] hosts = new Host[]{new Host("bubbletstic.com"), new Host("brendanmartens.com"), new Host("8.8.8.8")};
-        setListAdapter(new ArrayAdapter<Host>(getActivity(), android.R.layout.simple_list_item_activated_1, android.R.id.text1, hosts));
+    private HostAdapter createAdapter() {
+        return new HostAdapter(getActivity(), hosts);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_host_list, container, false);
+        listView = (ListView) view.findViewById(R.id.list);
+        adapter = createAdapter();
+        listView.setAdapter(adapter);
+        EditText addHost = (EditText) view.findViewById(R.id.fragment_host_list_add);
+        addHost.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                switch (actionId) {
+//                    case EditorInfo.IME_ACTION_DONE:
+                hosts.add(new Host(v.getText().toString()));
+                Collections.sort(hosts);
+                adapter.notifyDataSetChanged();
+                return true;
+//                    default:
+//                        return false;
+//                }
+            }
+
+        });
+        return view;
     }
 
     @Override
@@ -103,9 +150,9 @@ public class HostListFragment extends ListFragment {
         mCallbacks = sDummyCallbacks;
     }
 
-    @Override
+    //    @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
+//        super.onListItemClick(listView, view, position, id);
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.

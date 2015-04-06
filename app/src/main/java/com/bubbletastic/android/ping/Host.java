@@ -2,7 +2,7 @@ package com.bubbletastic.android.ping;
 
 import java.net.InetAddress;
 
-public class Host {
+public class Host implements Comparable {
     public String hostName;
     public InetAddress address;
 
@@ -16,5 +16,10 @@ public class Host {
     @Override
     public String toString() {
         return hostName;
+    }
+
+    @Override
+    public int compareTo(Object another) {
+        return this.toString().compareTo(another.toString());
     }
 }
