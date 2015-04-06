@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ping</string>
+    <string name="title_host_detail">Host Detail</string>
+</resources>
