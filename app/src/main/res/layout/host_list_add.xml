@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:showIn="@layout/fragment_host_list">
+
+    <EditText
+        android:id="@+id/host_list_add_input"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall"
+        android:gravity="bottom|start"
+        android:hint="@string/fragment_host_list_add_hint"
+        android:imeActionLabel="@string/fragment_host_list_add_action_label"
+        android:imeOptions="actionDone"
+        android:maxLines="1"
+        android:singleLine="true"
+        tools:text="supergreatnewdomain.com" />
+
+    <ImageButton
+        android:id="@+id/host_list_add_button"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="45dp"
+        android:layout_height="?android:attr/listPreferredItemHeightSmall"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_done_grey600_36dp" />
+
+</RelativeLayout>
