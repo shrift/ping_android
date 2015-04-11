@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="host_unreachable">@color/md_red_100</color>
+    <color name="host_reachable">@color/md_green_100</color>
+    <color name="host_unknown">@color/md_orange_100</color>
+
+    <color name="host_unreachable_highlight">@color/md_red_500</color>
+    <color name="host_reachable_highlight">@color/md_green_500</color>
+    <color name="host_unknown_highlight">@color/md_orange_500</color>
+</resources>

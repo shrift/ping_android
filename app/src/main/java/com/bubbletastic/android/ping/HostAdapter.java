@@ -13,6 +13,8 @@ import com.google.TimeUtil;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,11 +33,14 @@ public class HostAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+        if (hosts == null) {
+            return 0;
+        }
         return hosts.size();
     }
 
     @Override
-    public Object getItem(int position) {
+    public Host getItem(int position) {
         return hosts.get(position);
     }
 
@@ -63,7 +68,15 @@ public class HostAdapter extends BaseAdapter {
 
         updated = (TextView) view.findViewById(R.id.host_item_list_updated);
 
-        new CheckIsReachable(host.hostName, updated).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.MINUTE, -1);
+        Date oneMinuteAgo = cal.getTime();
+        if (host.getRefreshed() == null || host.getRefreshed().before(oneMinuteAgo)) {
+            new CheckIsReachable(host, updated).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            updateHostStatusInfo(updated, host);
+        }
 
         return view;
     }
@@ -76,17 +89,17 @@ public class HostAdapter extends BaseAdapter {
 
         private long updateStarted;
         private TextView updateView;
-        private String hostName;
+        private Host host;
         private boolean reachable;
 
-        public CheckIsReachable(String hostName, TextView updateView) {
-            this.hostName = hostName;
+        public CheckIsReachable(Host host, TextView updateView) {
+            this.host = host;
             this.updateView = updateView;
         }
 
         @Override
         protected void onPreExecute() {
-            updateView.setTag(hostName);
+            updateView.setTag(host.getHostName());
             updateView.setText("updating...");
             updateStarted = System.currentTimeMillis();
         }
@@ -96,17 +109,14 @@ public class HostAdapter extends BaseAdapter {
             HostStatus status = HostStatus.unknown;
 
             try {
-                InetAddress address = InetAddress.getByName(hostName);
-                System.out.println("Name: " + address.getHostName());
-                System.out.println("Addr: " + address.getHostAddress());
+                InetAddress address = InetAddress.getByName(host.getHostName());
                 reachable = address.isReachable(3000);
-                System.out.println("Reach: " + reachable);
                 status = HostStatus.reachable;
             } catch (UnknownHostException e) {
-                System.err.println("Unknown host " + hostName);
+                System.err.println("Unknown host " + host.getHostName());
                 status = HostStatus.unreachable;
             } catch (IOException e) {
-                System.err.println("Unable to reach " + hostName);
+                System.err.println("Unable to reach " + host.getHostName());
                 status = HostStatus.unreachable;
             }
 
@@ -115,26 +125,34 @@ public class HostAdapter extends BaseAdapter {
 
         @Override
         protected void onPostExecute(HostStatus status) {
-            String timeAgo = TimeUtil.getTimeAgo(updateStarted);
-            if (timeAgo != null && !timeAgo.trim().isEmpty()) {
-                updateView.setText(timeAgo);
-            }
 
-            if (updateView.getTag().equals(hostName)) {
-                View view = ((View) updateView.getParent());
-                switch (status) {
-                    case unreachable:
-                        view.setBackgroundColor(getContext().getResources().getColor(R.color.md_red_200));
-                        break;
-                    case reachable:
-                        view.setBackgroundColor(getContext().getResources().getColor(R.color.md_green_200));
-                        break;
-                    default:
-                        view.setBackgroundColor(getContext().getResources().getColor(R.color.md_orange_200));
-                        break;
+            if (updateView.getTag().equals(host.getHostName())) {
+                host.setRefreshed(new Date());
+                host.setStatus(status);
 
-                }
+                updateHostStatusInfo(updateView, host);
             }
+        }
+    }
+
+    private void updateHostStatusInfo(TextView updateView, Host host) {
+        String timeAgo = TimeUtil.getTimeAgo(host.getRefreshed().getTime());
+        if (timeAgo != null && !timeAgo.trim().isEmpty()) {
+            updateView.setText(timeAgo);
+        }
+
+        View backgroundView = ((View) updateView.getParent());
+        switch (host.getStatus()) {
+            case unreachable:
+                backgroundView.setBackgroundResource(R.drawable.list_selector_host_unreachable);
+                break;
+            case reachable:
+                backgroundView.setBackgroundResource(R.drawable.list_selector_host_reachable);
+                break;
+            default:
+                backgroundView.setBackgroundResource(R.drawable.list_selector_host_unknown);
+                break;
+
         }
     }
 }

@@ -63,8 +63,10 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:choiceMode="multipleChoiceModal"
+            android:clipToPadding="false"
             android:drawSelectorOnTop="false"
-            android:focusableInTouchMode="true" />
+            android:paddingBottom="@dimen/fab_size_normal_and_padding" />
 
         <TextView
             android:id="@+id/internalEmpty"
@@ -81,8 +83,8 @@
         android:layout_gravity="end|bottom"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/ic_add_black_24dp"
-        fab:fab_colorNormal="@color/primary"
-        fab:fab_colorPressed="@color/primary_dark" />
+        android:src="@drawable/ic_add_white_24dp"
+        fab:fab_colorNormal="@color/accent"
+        fab:fab_colorPressed="@color/accent" />
 
 </FrameLayout>
