@@ -43,12 +43,13 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/listContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:descendantFocusability="beforeDescendants"
-        android:focusableInTouchMode="true">
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
 
         <!--<LinearLayout-->
         <!--android:layout_width="match_parent"-->
@@ -59,22 +60,31 @@
         <!--<include layout="@layout/host_list_add" />-->
         <!--</LinearLayout>-->
 
-        <ListView
-            android:id="@+id/list"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/fragment_host_list_swipe_refresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:choiceMode="multipleChoiceModal"
-            android:clipToPadding="false"
-            android:drawSelectorOnTop="false"
-            android:paddingBottom="@dimen/fab_size_normal_and_padding" />
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/internalEmpty"
+            <ListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:choiceMode="multipleChoiceModal"
+                android:clipToPadding="false"
+                android:drawSelectorOnTop="false"
+                android:paddingBottom="@dimen/fab_size_normal_and_padding" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <include
+            layout="@layout/host_list_add"
+            android:visibility="gone"
+            tools:visibility="visible"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-    </FrameLayout>
+            android:layout_height="@dimen/fab_size_normal_and_padding" />
+
+    </LinearLayout>
+
 
     <com.github.clans.fab.FloatingActionButton
         android:id="@+id/fragment_host_list_add_fab"

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -33,19 +34,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class HostListFragment extends Fragment implements EditTextImeBackListener {
+public class HostListFragment extends Fragment implements EditTextImeBackListener, BackPressedListener {
 
     private static final String prefKeyHosts = "saved_hosts";
     private static final String prefsName = "app_preferences";
+    private SharedPreferences prefs;
+
+    private List<Host> hosts;
 
     private ListView listView;
-    private List<Host> hosts;
+    private int listViewPaddingBottom;
     private HostAdapter adapter;
-    private SharedPreferences prefs;
-    private FloatingActionButton addHostFab;
 
+    private FloatingActionButton addHostFab;
     private View headerAddInputView;
     private EditTextBackEvent addHostInput;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public HostListFragment() {
     }
@@ -70,6 +74,15 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_host_list, container, false);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.fragment_host_list_swipe_refresh);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshHosts();
+            }
+        });
+
         addHostFab = (FloatingActionButton) view.findViewById(R.id.fragment_host_list_add_fab);
         addHostFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +91,7 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
             }
         });
 
-        headerAddInputView = inflater.inflate(R.layout.host_list_add, listView, false);
+        headerAddInputView = view.findViewById(R.id.host_list_add);
         ImageButton addHostButton = (ImageButton) headerAddInputView.findViewById(R.id.host_list_add_button_add);
         addHostButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +104,7 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
         doneAddingHostsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addHost(addHostInput.getText().toString());
                 dismissAddHostInput();
                 dismissSoftKeyboard();
             }
@@ -123,6 +137,7 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
         });
 
         listView = (ListView) view.findViewById(R.id.list);
+        listViewPaddingBottom = listView.getPaddingBottom();
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position,
@@ -175,6 +190,21 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
         return view;
     }
 
+    private void refreshHosts() {
+
+        for (Host host : hosts) {
+            host.setRefreshed(null);
+        }
+
+        adapter.notifyDataSetInvalidated();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }, 250);
+    }
+
     private void deleteSelectedHosts() {
         SparseBooleanArray checked = listView.getCheckedItemPositions();
         List<Host> hostsForRemoval = new ArrayList<Host>();
@@ -200,6 +230,11 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
         addAddInputView();
         scrollAddHostInputIntoView();
         addHostFab.setVisibility(View.GONE);
+        listView.setPadding(
+                listView.getPaddingLeft(),
+                listView.getPaddingTop(),
+                listView.getPaddingRight(),
+                0);
 //        new Handler().postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
@@ -220,6 +255,10 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
         Collections.sort(hosts);
         adapter.notifyDataSetChanged();
         persistHosts();
+
+        if (hosts == null || hosts.isEmpty()) {
+            showAddHostInput();
+        }
     }
 
     private void addHost(String hostName) {
@@ -229,6 +268,8 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
             Collections.sort(hosts);
             adapter.notifyDataSetChanged();
             persistHosts();
+
+            listView.smoothScrollToPosition(adapter.getPositionOfHost(host));
         }
     }
 
@@ -243,6 +284,11 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
             public void run() {
                 //post slightly delayed so the keyboard goes away first (if it was open).
                 addHostFab.setVisibility(View.VISIBLE);
+                listView.setPadding(
+                        listView.getPaddingLeft(),
+                        listView.getPaddingTop(),
+                        listView.getPaddingRight(),
+                        listViewPaddingBottom);
                 removeAddInputView();
             }
         }, 50);
@@ -252,14 +298,16 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
      * Abstracted so that logic is not tied to where in the layout the input view is.
      */
     private void removeAddInputView() {
-        listView.removeFooterView(headerAddInputView);
+//        listView.removeFooterView(headerAddInputView);
+        headerAddInputView.setVisibility(View.GONE);
     }
 
     /**
      * Abstracted so that logic is not tied to where in the layout the input view is.
      */
     private void addAddInputView() {
-        listView.addFooterView(headerAddInputView);
+//        listView.addFooterView(headerAddInputView);
+        headerAddInputView.setVisibility(View.VISIBLE);
     }
 
     private List<Host> retrievePersistedHosts() {
@@ -286,4 +334,12 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
     }
 
 
+    @Override
+    public boolean backPressed() {
+        if (headerAddInputView.getVisibility() == View.VISIBLE) {
+            dismissAddHostInput();
+            return true;
+        }
+        return false;
+    }
 }

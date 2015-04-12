@@ -9,4 +9,5 @@
     <string name="fragment_host_list_add_action_label">Add</string>
 
     <string name="menu_delete">delete</string>
+    <string name="host_updating">pinging...</string>
 </resources>

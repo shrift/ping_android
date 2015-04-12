@@ -10,6 +10,7 @@ public class HostListActivity extends Activity {
      * device.
      */
     private boolean mTwoPane;
+    private HostListFragment hostListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +19,16 @@ public class HostListActivity extends Activity {
 
         if (findViewById(R.id.host_detail_container) != null) {
             mTwoPane = true;
+        }
+
+        hostListFragment = (HostListFragment) getFragmentManager().findFragmentById(R.id.host_list);
+    }
+
+    @Override
+    public void onBackPressed() {
+        boolean handled = hostListFragment.backPressed();
+        if (!handled) {
+            super.onBackPressed();
         }
     }
 }

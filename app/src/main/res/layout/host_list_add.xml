@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/host_list_add"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="?android:attr/listPreferredItemHeight">
 
     <com.bubbletastic.android.ping.view.EditTextBackEvent
         android:id="@+id/host_list_add_input"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/listPreferredItemHeight"
+        android:layout_centerVertical="true"
         android:gravity="bottom|start"
         android:hint="@string/fragment_host_list_add_hint"
-        android:paddingEnd="128dp"
         android:imeActionLabel="@string/fragment_host_list_add_action_label"
-        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
         android:imeOptions="actionDone"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
         android:inputType="textUri"
+        android:maxLines="1"
+        android:paddingEnd="128dp"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:selectAllOnFocus="true"
         android:singleLine="true"
-        tools:text="supergreatnewdomainthatisquitelongsowecancheckpadding.com"
-        tools:ignore="RtlSymmetry" />
+        tools:ignore="RtlSymmetry"
+        tools:text="supergreatnewdomainthatisquitelongsowecancheckpadding.com" />
 
     <ImageButton
         android:id="@+id/host_list_add_button_done"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="64dp"
-        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="@android:color/transparent"
@@ -36,9 +38,9 @@
         android:id="@+id/host_list_add_button_add"
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="64dp"
-        android:layout_height="?android:attr/listPreferredItemHeight"
-        android:layout_toStartOf="@id/host_list_add_button_done"
+        android:layout_height="match_parent"
         android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/host_list_add_button_done"
         android:background="@android:color/transparent"
         android:src="@drawable/ic_add_grey600_36dp"
         tools:ignore="ContentDescription" />

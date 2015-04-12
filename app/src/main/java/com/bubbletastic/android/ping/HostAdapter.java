@@ -31,6 +31,10 @@ public class HostAdapter extends BaseAdapter {
         this.context = context;
     }
 
+    public int getPositionOfHost(Host host) {
+        return hosts.indexOf(host);
+    }
+
     @Override
     public int getCount() {
         if (hosts == null) {
@@ -61,17 +65,23 @@ public class HostAdapter extends BaseAdapter {
         } else {
             view = convertView;
         }
-
         Host host = (Host) getItem(position);
+
+        //reset status color
+        view.setBackgroundResource(R.drawable.list_selector_host_unknown);
+
         hostName = (TextView) view.findViewById(R.id.host_item_list_hostname);
         hostName.setText(host.toString());
 
         updated = (TextView) view.findViewById(R.id.host_item_list_updated);
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.MINUTE, -1);
-        Date oneMinuteAgo = cal.getTime();
+        //reset to default status text
+        updated.setText(getContext().getString(R.string.updated_unknown));
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, -1);
+        Date oneMinuteAgo = calendar.getTime();
         if (host.getRefreshed() == null || host.getRefreshed().before(oneMinuteAgo)) {
             new CheckIsReachable(host, updated).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
@@ -100,7 +110,7 @@ public class HostAdapter extends BaseAdapter {
         @Override
         protected void onPreExecute() {
             updateView.setTag(host.getHostName());
-            updateView.setText("updating...");
+            updateView.setText(getContext().getString(R.string.host_updating));
             updateStarted = System.currentTimeMillis();
         }
 
@@ -108,16 +118,24 @@ public class HostAdapter extends BaseAdapter {
         protected HostStatus doInBackground(Void... voidness) {
             HostStatus status = HostStatus.unknown;
 
+            InetAddress address = null;
             try {
-                InetAddress address = InetAddress.getByName(host.getHostName());
-                reachable = address.isReachable(3000);
-                status = HostStatus.reachable;
+                address = InetAddress.getByName(host.getHostName());
             } catch (UnknownHostException e) {
                 System.err.println("Unknown host " + host.getHostName());
-                status = HostStatus.unreachable;
-            } catch (IOException e) {
-                System.err.println("Unable to reach " + host.getHostName());
-                status = HostStatus.unreachable;
+                return HostStatus.unreachable;
+            }
+
+            //check the host 2 times
+            for (int i = 0; i < 2; i++) {
+                try {
+                    reachable = address.isReachable(3000);
+                    status = HostStatus.reachable;
+                } catch (IOException e) {
+                    System.err.println("Unable to reach " + host.getHostName());
+                    status = HostStatus.unreachable;
+                    break;
+                }
             }
 
             return status;
