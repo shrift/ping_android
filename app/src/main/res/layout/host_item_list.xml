@@ -3,8 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeightSmall"
-    android:background="@drawable/list_selector_host_unknown"
+    android:background="@drawable/list_selector"
     android:orientation="horizontal">
+
+    <View
+        android:id="@+id/host_item_list_status_indicator"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="?android:attr/listPreferredItemPaddingStart"
+        android:background="@drawable/round_indicator_unknown_normal" />
 
     <TextView
         android:id="@+id/host_item_list_hostname"

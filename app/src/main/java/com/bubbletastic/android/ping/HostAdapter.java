@@ -56,6 +56,7 @@ public class HostAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
+        View indicator;
         TextView hostName;
         TextView updated;
 
@@ -68,7 +69,9 @@ public class HostAdapter extends BaseAdapter {
         Host host = (Host) getItem(position);
 
         //reset status color
-        view.setBackgroundResource(R.drawable.list_selector_host_unknown);
+        indicator = view.findViewById(R.id.host_item_list_status_indicator);
+        indicator.setBackgroundResource(R.drawable.round_indicator_host_unknown);
+
 
         hostName = (TextView) view.findViewById(R.id.host_item_list_hostname);
         hostName.setText(host.toString());
@@ -159,16 +162,16 @@ public class HostAdapter extends BaseAdapter {
             updateView.setText(timeAgo);
         }
 
-        View backgroundView = ((View) updateView.getParent());
+        View indicator = ((View) updateView.getParent()).findViewById(R.id.host_item_list_status_indicator);
         switch (host.getStatus()) {
             case unreachable:
-                backgroundView.setBackgroundResource(R.drawable.list_selector_host_unreachable);
+                indicator.setBackgroundResource(R.drawable.round_indicator_host_unreachable);
                 break;
             case reachable:
-                backgroundView.setBackgroundResource(R.drawable.list_selector_host_reachable);
+                indicator.setBackgroundResource(R.drawable.round_indicator_host_reachable);
                 break;
             default:
-                backgroundView.setBackgroundResource(R.drawable.list_selector_host_unknown);
+                indicator.setBackgroundResource(R.drawable.round_indicator_host_unknown);
                 break;
 
         }
