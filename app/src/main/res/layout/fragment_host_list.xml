@@ -71,6 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:choiceMode="multipleChoiceModal"
+                android:divider="@null"
                 android:clipToPadding="false"
                 android:drawSelectorOnTop="false"
                 android:paddingBottom="@dimen/fab_size_normal_and_padding" />
