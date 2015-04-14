@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.google.TimeUtil;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -103,7 +101,6 @@ public class HostAdapter extends BaseAdapter {
         private long updateStarted;
         private TextView updateView;
         private Host host;
-        private boolean reachable;
 
         public CheckIsReachable(Host host, TextView updateView) {
             this.host = host;
@@ -132,8 +129,11 @@ public class HostAdapter extends BaseAdapter {
             //check the host 2 times
             for (int i = 0; i < 2; i++) {
                 try {
-                    reachable = address.isReachable(3000);
-                    status = HostStatus.reachable;
+                    if (address.isReachable(3000)) {
+                        status = HostStatus.reachable;
+                    } else {
+                        status = HostStatus.unreachable;
+                    }
                 } catch (IOException e) {
                     System.err.println("Unable to reach " + host.getHostName());
                     status = HostStatus.unreachable;
@@ -157,10 +157,11 @@ public class HostAdapter extends BaseAdapter {
     }
 
     private void updateHostStatusInfo(TextView updateView, Host host) {
-        String timeAgo = TimeUtil.getTimeAgo(host.getRefreshed().getTime());
-        if (timeAgo != null && !timeAgo.trim().isEmpty()) {
-            updateView.setText(timeAgo);
-        }
+//        String timeAgo = TimeUtil.getTimeAgo(host.getRefreshed().getTime());
+//        if (timeAgo != null && !timeAgo.trim().isEmpty()) {
+//            updateView.setText(timeAgo);
+//        }
+        updateView.setText(null);
 
         View indicator = ((View) updateView.getParent()).findViewById(R.id.host_item_list_status_indicator);
         switch (host.getStatus()) {

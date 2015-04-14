@@ -6,10 +6,12 @@
 
     <application
 
+        android:name="com.bubbletastic.android.ping.Ping"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".HostListActivity"
             android:label="@string/app_name">
@@ -19,6 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".HostDetailActivity"
             android:label="@string/title_host_detail"
@@ -27,6 +30,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".HostListActivity" />
         </activity>
+
+        <service
+            android:name=".UpdateHostsService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

@@ -1,8 +1,7 @@
 package com.bubbletastic.android.ping;
 
-import android.app.Fragment;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -26,19 +25,12 @@ import android.widget.TextView;
 import com.bubbletastic.android.ping.view.EditTextBackEvent;
 import com.bubbletastic.android.ping.view.EditTextImeBackListener;
 import com.github.clans.fab.FloatingActionButton;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class HostListFragment extends Fragment implements EditTextImeBackListener, BackPressedListener {
-
-    private static final String prefKeyHosts = "saved_hosts";
-    private static final String prefsName = "app_preferences";
-    private SharedPreferences prefs;
+public class HostListFragment extends PingFragment implements EditTextImeBackListener, BackPressedListener {
 
     private List<Host> hosts;
 
@@ -57,12 +49,7 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        prefs = getActivity().getSharedPreferences(prefsName, Context.MODE_PRIVATE);
 
-        //Initialize empty host list to avoid null issues.
-        hosts = new ArrayList<Host>();
-
-        retrievePersistedHosts();
     }
 
     private HostAdapter createAdapter() {
@@ -180,13 +167,15 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
                 return false;
             }
         });
+
+        //Initialize empty host list to avoid null issues.
+        hosts = new ArrayList<Host>();
+
         adapter = createAdapter();
         listView.setAdapter(adapter);
 
-        if (hosts == null || hosts.isEmpty()) {
-            showAddHostInput();
-        }
 
+        retrievePersistedHosts();
         return view;
     }
 
@@ -256,12 +245,16 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
         adapter.notifyDataSetChanged();
         persistHosts();
 
-        if (hosts == null || hosts.isEmpty()) {
+        if (hosts.isEmpty()) {
             showAddHostInput();
         }
     }
 
     private void addHost(String hostName) {
+        if (hostName == null || hostName.trim().isEmpty()) {
+            return;
+        }
+
         Host host = new Host(hostName);
         if (!hosts.contains(host)) {
             hosts.add(host);
@@ -310,27 +303,35 @@ public class HostListFragment extends Fragment implements EditTextImeBackListene
         headerAddInputView.setVisibility(View.VISIBLE);
     }
 
-    private List<Host> retrievePersistedHosts() {
-        String hostsJson = prefs.getString(prefKeyHosts, null);
-        if (hostsJson != null) {
-            Gson gson = new Gson();
-            Type hostsType = new TypeToken<ArrayList<Host>>() {
-            }.getType();
-            hosts = gson.fromJson(hostsJson, hostsType);
-            Collections.sort(hosts);
-            return hosts;
-        }
-        return null;
+    private void retrievePersistedHosts() {
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                //retain this hosts list reference so we don't have to recreate the adapter, or reset its hosts list.
+                hosts.clear();
+                hosts.addAll(getApp().retrievePersistedHosts());
+                Collections.sort(hosts);
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                adapter.notifyDataSetInvalidated();
+                if (hosts.isEmpty()) {
+                    showAddHostInput();
+                }
+            }
+        }.execute();
     }
 
     private void persistHosts() {
-        Gson gson = new Gson();
-        SharedPreferences.Editor editor = prefs.edit();
-        Type hostsType = new TypeToken<ArrayList<Host>>() {
-        }.getType();
-        editor.putString(prefKeyHosts, gson.toJson(hosts, hostsType));
-
-        editor.apply();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getApp().persistHosts(hosts);
+            }
+        }).start();
     }
 
 
