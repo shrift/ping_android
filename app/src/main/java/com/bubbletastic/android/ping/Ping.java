@@ -12,7 +12,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -39,7 +38,7 @@ public class Ping extends Application {
         JobInfo updateHostsJob = new JobInfo.Builder(UpdateHostsService.JOB_ID, new ComponentName(this, UpdateHostsService.class))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                         //update hosts once a minute
-                .setPeriodic(4000)
+                .setPeriodic(60000)
                 .build();
 
         //schedule the update hosts job
@@ -52,32 +51,31 @@ public class Ping extends Application {
      *
      * @param host
      */
-    public void updateHost(Host host) {
+    public synchronized void updateHost(Host host) {
 //        synchronized (persistenceLock) {
-            List<Host> hosts = retrievePersistedHosts();
+        List<Host> hosts = retrievePersistedHosts();
 
-            //do nothing if the list didn't contain the host.
-            if (!hosts.contains(host)) {
-                return;
-            }
+        //do nothing if the list didn't contain the host.
+        if (!hosts.contains(host)) {
+            return;
+        }
 
-            Collections.replaceAll(hosts, hosts.get(hosts.indexOf(host)), host);
-            persistHosts(hosts);
+        hosts.remove(host);
+        hosts.add(host);
+        saveHostsOverwriting(hosts);
 //        }
     }
 
     /**
      * This method adds a list of hosts to persistent storage.
      * This method may block if another write operation is in progress and therefore should not be called on the main thread.
+     * This method will overwrite what currently exists in storage.
      *
      * @param hosts
      */
-    public void persistHosts(List<Host> hosts) {
+    public synchronized void persistHostsOverwrite(List<Host> hosts) {
 //        synchronized (persistenceLock) {
-            //we cannot simply dump the list of hosts into persistent storage as that would overwrite what is there at present
-            for (Host host : hosts) {
-                persistHost(host);
-            }
+        saveHostsOverwriting(hosts);
 //        }
     }
 
@@ -87,28 +85,45 @@ public class Ping extends Application {
      *
      * @param host
      */
-    public void persistHost(Host host) {
+    public synchronized void persistHost(Host host) {
 //        synchronized (persistenceLock) {
-            Gson gson = new Gson();
-            SharedPreferences.Editor editor = prefs.edit();
-            Type hostsType = new TypeToken<ArrayList<Host>>() {
-            }.getType();
 
-            List<Host> hosts = retrievePersistedHosts();
-            if (hosts == null) {
-                hosts = new ArrayList<>();
-            }
+        List<Host> hosts = retrievePersistedHosts();
+        if (hosts == null) {
+            hosts = new ArrayList<>();
+        }
 
-            if (hosts.contains(host)) {
-                Collections.replaceAll(hosts, hosts.get(hosts.indexOf(host)), host);
-            } else {
-                hosts.add(host);
-            }
+        if (hosts.contains(host)) {
+            hosts.remove(host);
+        }
+        hosts.add(host);
 
-            editor.putString(PREF_KEY_HOSTS, gson.toJson(hosts, hostsType));
-
-            editor.apply();
+        saveHostsOverwriting(hosts);
 //        }
+    }
+
+    /**
+     * This method removes hosts from persistent storage.
+     * This method may block if a write operation is in progress and therefore should not be called on the main thread.
+     *
+     * @param hostsForRemoval
+     */
+    public synchronized void removeHosts(List<Host> hostsForRemoval) {
+        List<Host> hosts = retrievePersistedHosts();
+        hosts.removeAll(hostsForRemoval);
+        saveHostsOverwriting(hosts);
+    }
+
+    /**
+     * This method remove a host from persistent storage.
+     * This method may block if a write operation is in progress and therefore should not be called on the main thread.
+     *
+     * @param hostToRemove
+     */
+    public synchronized void removeHost(Host hostToRemove) {
+        List<Host> hosts = retrievePersistedHosts();
+        hosts.remove(hostToRemove);
+        saveHostsOverwriting(hosts);
     }
 
     /**
@@ -117,18 +132,28 @@ public class Ping extends Application {
      *
      * @return
      */
-    public List<Host> retrievePersistedHosts() {
+    public synchronized List<Host> retrievePersistedHosts() {
 //        synchronized (persistenceLock) {
-            List<Host> hosts = new ArrayList<>();
-            String hostsJson = prefs.getString(PREF_KEY_HOSTS, null);
-            if (hostsJson != null) {
-                Gson gson = new Gson();
-                Type hostsType = new TypeToken<ArrayList<Host>>() {
-                }.getType();
-                hosts = gson.fromJson(hostsJson, hostsType);
-            }
-            return hosts;
+        List<Host> hosts = new ArrayList<>();
+        String hostsJson = prefs.getString(PREF_KEY_HOSTS, null);
+        if (hostsJson != null) {
+            Gson gson = new Gson();
+            Type hostsType = new TypeToken<ArrayList<Host>>() {
+            }.getType();
+            hosts = gson.fromJson(hostsJson, hostsType);
+        }
+        return hosts;
 //        }
+    }
+
+    private void saveHostsOverwriting(List<Host> hosts) {
+        Gson gson = new Gson();
+        Type hostsType = new TypeToken<ArrayList<Host>>() {
+        }.getType();
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PREF_KEY_HOSTS, gson.toJson(hosts, hostsType));
+        editor.commit();
     }
 
 }

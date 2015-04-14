@@ -239,11 +239,18 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
         listView.setSelection(adapter.getCount() - 1);
     }
 
-    private void removeHosts(List<Host> hostsForRemoval) {
+    private void removeHosts(final List<Host> hostsForRemoval) {
         hosts.removeAll(hostsForRemoval);
         Collections.sort(hosts);
         adapter.notifyDataSetChanged();
-        persistHosts();
+//        persistHostsOverwrite();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getApp().removeHosts(hostsForRemoval);
+            }
+        }).start();
 
         if (hosts.isEmpty()) {
             showAddHostInput();
@@ -329,7 +336,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
         new Thread(new Runnable() {
             @Override
             public void run() {
-                getApp().persistHosts(hosts);
+                getApp().persistHostsOverwrite(hosts);
             }
         }).start();
     }
