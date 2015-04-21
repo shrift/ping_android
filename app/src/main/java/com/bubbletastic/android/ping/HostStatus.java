@@ -5,5 +5,5 @@ package com.bubbletastic.android.ping;
  */
 public enum HostStatus {
 
-    unknown, reachable, unreachable
+    unknown, reachable, unreachable, updating
 }

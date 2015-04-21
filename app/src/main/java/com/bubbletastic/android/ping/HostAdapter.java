@@ -11,7 +11,6 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -76,18 +75,16 @@ public class HostAdapter extends BaseAdapter {
 
         updated = (TextView) view.findViewById(R.id.host_item_list_updated);
 
-        //reset to default status text
-        updated.setText(getContext().getString(R.string.updated_unknown));
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.MINUTE, -1);
-        Date oneMinuteAgo = calendar.getTime();
-        if (host.getRefreshed() == null || host.getRefreshed().before(oneMinuteAgo)) {
-            new CheckIsReachable(host, updated).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        } else {
-            updateHostStatusInfo(updated, host);
-        }
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(new Date());
+//        calendar.add(Calendar.MINUTE, -1);
+//        Date oneMinuteAgo = calendar.getTime();
+//        if (host.getRefreshed() == null || host.getRefreshed().before(oneMinuteAgo)) {
+//            new CheckIsReachable(host, updated).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+//        } else {
+        updateHostStatusInfo(updated, host);
+//        }
 
         return view;
     }
@@ -161,18 +158,24 @@ public class HostAdapter extends BaseAdapter {
 //        if (timeAgo != null && !timeAgo.trim().isEmpty()) {
 //            updateView.setText(timeAgo);
 //        }
-        updateView.setText(null);
 
         View indicator = ((View) updateView.getParent()).findViewById(R.id.host_item_list_status_indicator);
         switch (host.getStatus()) {
             case unreachable:
                 indicator.setBackgroundResource(R.drawable.round_indicator_host_unreachable);
+                updateView.setText(null);
                 break;
             case reachable:
                 indicator.setBackgroundResource(R.drawable.round_indicator_host_reachable);
+                updateView.setText(null);
+                break;
+            case updating:
+                indicator.setBackgroundResource(R.drawable.round_indicator_host_unknown);
+                updateView.setText(getContext().getString(R.string.host_updating));
                 break;
             default:
                 indicator.setBackgroundResource(R.drawable.round_indicator_host_unknown);
+                updateView.setText(getContext().getString(R.string.updated_unknown));
                 break;
 
         }

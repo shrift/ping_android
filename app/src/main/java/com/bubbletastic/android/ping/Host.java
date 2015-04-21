@@ -11,10 +11,12 @@ public class Host implements Comparable {
     private HostStatus status;
 
     public Host() {
+        status = HostStatus.unknown;
     }
 
     public Host(String hostName) {
         this.hostName = hostName;
+        status = HostStatus.unknown;
     }
 
     @Override

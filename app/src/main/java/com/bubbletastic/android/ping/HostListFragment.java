@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.bubbletastic.android.ping.view.EditTextBackEvent;
 import com.bubbletastic.android.ping.view.EditTextImeBackListener;
 import com.github.clans.fab.FloatingActionButton;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +43,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     private View headerAddInputView;
     private EditTextBackEvent addHostInput;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Handler handler;
 
     public HostListFragment() {
     }
@@ -49,7 +51,54 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        handler = new Handler();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getApp().getBus().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getApp().getBus().unregister(this);
+    }
+
+    @Subscribe
+    public void hostsUpdating(final HostsUpdating hostsUpdating) {
+        //the bus may be delivering events from a different thread, so post to main thread handler
+        if (hostsUpdating.isUpdating()) {
+            //oddly, we only want to do anything if this is false
+            //(such as hide the swipe-refresh refreshing indicator as it should not be shown without explicit user interaction)
+            return;
+        }
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(hostsUpdating.isUpdating());
+            }
+        });
+    }
+
+    @Subscribe
+    public void hostUpdated(final Host host) {
+        //the bus may be delivering events from a different thread, so post to main thread handler
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (adapter == null) {
+                    return;
+                }
+                if (hosts.contains(host)) {
+                    hosts.remove(host);
+                    hosts.add(host);
+                    Collections.sort(hosts);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
     }
 
     private HostAdapter createAdapter() {
@@ -180,18 +229,8 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     }
 
     private void refreshHosts() {
-
-        for (Host host : hosts) {
-            host.setRefreshed(null);
-        }
-
-        adapter.notifyDataSetInvalidated();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        }, 250);
+        getApp().refreshHostsSoon();
+        swipeRefreshLayout.setRefreshing(true);
     }
 
     private void deleteSelectedHosts() {
@@ -248,7 +287,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
         new Thread(new Runnable() {
             @Override
             public void run() {
-                getApp().removeHosts(hostsForRemoval);
+                getApp().getHostService().removeHosts(hostsForRemoval);
             }
         }).start();
 
@@ -262,12 +301,19 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
             return;
         }
 
-        Host host = new Host(hostName);
+        final Host host = new Host(hostName);
         if (!hosts.contains(host)) {
             hosts.add(host);
             Collections.sort(hosts);
             adapter.notifyDataSetChanged();
             persistHosts();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    getApp().getHostService().refreshHost(host);
+                }
+            }).start();
 
             listView.smoothScrollToPosition(adapter.getPositionOfHost(host));
         }
@@ -316,7 +362,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
             protected Void doInBackground(Void... params) {
                 //retain this hosts list reference so we don't have to recreate the adapter, or reset its hosts list.
                 hosts.clear();
-                hosts.addAll(getApp().retrievePersistedHosts());
+                hosts.addAll(getApp().getHostService().retrievePersistedHosts());
                 Collections.sort(hosts);
 
                 return null;
@@ -336,7 +382,8 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
         new Thread(new Runnable() {
             @Override
             public void run() {
-                getApp().persistHostsOverwrite(hosts);
+                //copy the list here to ensure we don't have any concurrent modification exeptions with this list getting edited while being written out to storage
+                getApp().getHostService().persistHostsOverwrite(new ArrayList<Host>(hosts));
             }
         }).start();
     }
