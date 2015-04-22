@@ -1,5 +1,8 @@
 package com.bubbletastic.android.ping;
 
+import com.bubbletastic.android.ping.model.proto.HostStatus;
+import com.bubbletastic.android.ping.model.proto.ProtoHost;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -17,6 +20,24 @@ public class Host implements Comparable {
     public Host(String hostName) {
         this.hostName = hostName;
         status = HostStatus.unknown;
+    }
+
+    public Host(ProtoHost protoHost) {
+        this.hostName = protoHost.host_name;
+        this.status = protoHost.status;
+        if (protoHost.refreshed != null) {
+            this.refreshed = new Date(protoHost.refreshed);
+        }
+
+    }
+
+    public ProtoHost toProtoHost() {
+        ProtoHost.Builder protoHostBuilder = new ProtoHost.Builder();
+        protoHostBuilder.host_name(hostName).status(status);
+        if (refreshed != null) {
+            protoHostBuilder.refreshed(refreshed.getTime());
+        }
+        return protoHostBuilder.build();
     }
 
     @Override

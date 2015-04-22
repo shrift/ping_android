@@ -3,12 +3,14 @@ package com.bubbletastic.android.ping;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Base64;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.bubbletastic.android.ping.model.proto.HostStatus;
+import com.bubbletastic.android.ping.model.proto.ProtoHost;
+import com.bubbletastic.android.ping.model.proto.HostsContainer;
+import com.squareup.wire.Wire;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -172,22 +174,34 @@ public class HostService {
         List<Host> hosts = new ArrayList<>();
         String hostsJson = prefs.getString(PREF_KEY_HOSTS, null);
         if (hostsJson != null) {
-            Gson gson = new Gson();
-            Type hostsType = new TypeToken<ArrayList<Host>>() {
-            }.getType();
-            hosts = gson.fromJson(hostsJson, hostsType);
+            byte[] bytes = Base64.decode(hostsJson, Base64.NO_WRAP);
+            Wire wire = new Wire();
+            try {
+                HostsContainer hostsContainer = wire.parseFrom(bytes, HostsContainer.class);
+                for (ProtoHost protoHost : hostsContainer.hosts) {
+                    hosts.add(new Host(protoHost));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return hosts;
     }
 
+    /**
+     * Protocol Buffers are used to store data so that we have a schema that can evolve, avoiding nasty upgrade issues if the Host objects change.
+     * @param hosts
+     */
     @SuppressLint("CommitPrefEdits")
     private synchronized void saveHostsOverwriting(List<Host> hosts) {
-        Gson gson = new Gson();
-        Type hostsType = new TypeToken<ArrayList<Host>>() {
-        }.getType();
+        List<ProtoHost> protoHosts = new ArrayList<ProtoHost>();
+        for (Host host : hosts) {
+            protoHosts.add(host.toProtoHost());
+        }
 
+        byte[] bytes = new HostsContainer.Builder().hosts(protoHosts).build().toByteArray();
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PREF_KEY_HOSTS, gson.toJson(hosts, hostsType));
+        editor.putString(PREF_KEY_HOSTS, Base64.encodeToString(bytes, Base64.NO_WRAP));
         editor.commit();
     }
 }

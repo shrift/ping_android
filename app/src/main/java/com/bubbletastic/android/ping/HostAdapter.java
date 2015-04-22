@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.bubbletastic.android.ping.model.proto.HostStatus;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
