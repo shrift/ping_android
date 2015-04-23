@@ -1,43 +1,37 @@
 package com.bubbletastic.android.ping;
 
 import com.bubbletastic.android.ping.model.proto.HostStatus;
+import com.bubbletastic.android.ping.model.proto.PingResult;
 import com.bubbletastic.android.ping.model.proto.ProtoHost;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 public class Host implements Comparable {
 
     private String hostName;
-    private Date refreshed;
-    private HostStatus status;
+    private List<PingResult> results;
+    private HostStatus currentStatus = HostStatus.unknown;
 
     public Host() {
-        status = HostStatus.unknown;
     }
 
     public Host(String hostName) {
         this.hostName = hostName;
-        status = HostStatus.unknown;
     }
 
     public Host(ProtoHost protoHost) {
         this.hostName = protoHost.host_name;
-        this.status = protoHost.status;
-        if (protoHost.refreshed != null) {
-            this.refreshed = new Date(protoHost.refreshed);
-        }
-
     }
 
     public ProtoHost toProtoHost() {
         ProtoHost.Builder protoHostBuilder = new ProtoHost.Builder();
-        protoHostBuilder.host_name(hostName).status(status);
-        if (refreshed != null) {
-            protoHostBuilder.refreshed(refreshed.getTime());
-        }
-        return protoHostBuilder.build();
+        return protoHostBuilder.host_name(hostName).results(results).build();
     }
 
     @Override
@@ -76,18 +70,40 @@ public class Host implements Comparable {
     }
 
     public Date getRefreshed() {
-        return refreshed;
+        if (results != null) {
+            sortResultsByDate();
+            return new Date(results.get(0).pinged_at);
+        }
+        return null;
     }
 
-    public void setRefreshed(Date refreshed) {
-        this.refreshed = refreshed;
+    public List<PingResult> getResults() {
+        if (results == null) {
+            return new ArrayList<PingResult>();
+        }
+        return results;
     }
 
-    public HostStatus getStatus() {
-        return status;
+    public void setResults(List<PingResult> results) {
+        this.results = results;
     }
 
-    public void setStatus(HostStatus status) {
-        this.status = status;
+    private void sortResultsByDate() {
+        if (results != null) {
+            Collections.sort(results, new Comparator<PingResult>() {
+                @Override
+                public int compare(PingResult lhs, PingResult rhs) {
+                    return lhs.pinged_at.compareTo(rhs.pinged_at);
+                }
+            });
+        }
+    }
+
+    public HostStatus getCurrentStatus() {
+        return currentStatus;
+    }
+
+    public void setCurrentStatus(HostStatus currentStatus) {
+        this.currentStatus = currentStatus;
     }
 }

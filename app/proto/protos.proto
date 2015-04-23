@@ -11,11 +11,15 @@ enum HostStatus {
 
 message ProtoHost {
     optional string host_name = 1;
-    optional int64 refreshed = 2;
-    optional HostStatus status = 3 [default = unknown];
+    repeated PingResult results = 2;
+}
+
+message PingResult {
+    optional HostStatus status = 1 [default = unreachable];
+    optional int64 pinged_at = 2;
+    optional int32 round_trip_avg = 3;
 }
 
 message HostsContainer {
     repeated ProtoHost hosts = 1;
 }
-

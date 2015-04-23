@@ -6,15 +6,15 @@ import android.content.SharedPreferences;
 import android.util.Base64;
 
 import com.bubbletastic.android.ping.model.proto.HostStatus;
-import com.bubbletastic.android.ping.model.proto.ProtoHost;
 import com.bubbletastic.android.ping.model.proto.HostsContainer;
+import com.bubbletastic.android.ping.model.proto.PingResult;
+import com.bubbletastic.android.ping.model.proto.ProtoHost;
 import com.squareup.wire.Wire;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,7 +42,8 @@ public class HostService {
     }
 
     /**
-     * This method will update the passed host. This operation performs calls on the network and should not be performed on the main thread.
+     * This method will check that the passed host is reachable as many times as configured to count as "refreshed".
+     * This operation performs calls on the network and should not be performed on the main thread.
      *
      * @param host
      * @return
@@ -51,7 +52,7 @@ public class HostService {
         Ping ping = (Ping) context;
 
         HostStatus status = HostStatus.updating;
-        host.setStatus(status);
+        host.setCurrentStatus(status);
         ping.getBus().post(host);
 
         InetAddress address = null;
@@ -62,32 +63,84 @@ public class HostService {
             status = HostStatus.unreachable;
         }
 
+        //check the host 4 times
+        int attempts = 4;
+
+        int[] times = new int[attempts];
+        Integer time = null;
         if (address != null) {
-            //check the host 4 times
-            for (int i = 0; i < 4; i++) {
-                if (status == HostStatus.unreachable) {
-                    //require that all attempts are successful
-                    //(the initial ping attempt will always be "updating" due to the first line of the method, but subsequent iterations may be "unreachable")
+            for (int i = 0; i < attempts; i++) {
+                PingResult pingResult = pingHost(host, 1000);
+                status = pingResult.status;
+
+                if (!status.equals(HostStatus.reachable)) {
                     break;
                 }
-                try {
-                    if (address.isReachable(3000)) {
-                        status = HostStatus.reachable;
-                    } else {
-                        status = HostStatus.unreachable;
-                    }
-                } catch (IOException e) {
-                    System.err.println("Unable to reach " + host.getHostName());
-                    status = HostStatus.unreachable;
-                    break;
+
+                times[i] = pingResult.round_trip_avg;
+            }
+
+            if (times.length > 0) {
+                int sum = 0;
+                for (int i = 0; i < times.length; i++) {
+                    sum += i;
+                }
+                if (sum > 0) {
+                    time = (int) ((double) sum / (double) times.length);
                 }
             }
         }
-        host.setRefreshed(new Date());
-        host.setStatus(status);
+
+        host.setCurrentStatus(status);
+        host.getResults().add(new PingResult.Builder()
+                .pinged_at(System.currentTimeMillis())
+                .round_trip_avg(time)
+                .status(status)
+                .build());
         ping.getBus().post(host);
 
+        updateHost(host);
+
         return host;
+    }
+
+    /**
+     * This method will ping the passed host.
+     * This operation performs calls on the network and should not be performed on the main thread.
+     *
+     * @param host
+     * @param timeout How long to wait for a ping response before giving up.
+     * @return
+     */
+    private PingResult pingHost(Host host, int timeout) {
+        Ping ping = (Ping) context;
+
+        HostStatus status = HostStatus.unknown;
+        InetAddress address = null;
+        Integer time = null;
+        try {
+            address = InetAddress.getByName(host.getHostName());
+        } catch (UnknownHostException e) {
+            status = HostStatus.unreachable;
+        }
+
+        if (address != null) {
+            //check the host 4 times
+            try {
+                long startTime = System.currentTimeMillis();
+                if (address.isReachable(timeout)) {
+                    status = HostStatus.reachable;
+                } else {
+                    status = HostStatus.unreachable;
+                }
+                long endTime = System.currentTimeMillis();
+                time = (int) (endTime - startTime);
+            } catch (IOException e) {
+                status = HostStatus.unreachable;
+            }
+        }
+
+        return new PingResult.Builder().pinged_at(System.currentTimeMillis()).status(status).round_trip_avg(time).build();
     }
 
     /**
@@ -190,6 +243,7 @@ public class HostService {
 
     /**
      * Protocol Buffers are used to store data so that we have a schema that can evolve, avoiding nasty upgrade issues if the Host objects change.
+     *
      * @param hosts
      */
     @SuppressLint("CommitPrefEdits")

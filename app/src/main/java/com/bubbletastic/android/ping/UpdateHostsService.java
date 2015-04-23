@@ -33,7 +33,7 @@ public class UpdateHostsService extends JobService {
                 Collections.sort(hosts);
 
                 for (Host host : hosts) {
-                    ping.getHostService().updateHost(ping.getHostService().refreshHost(host));
+                    ping.getHostService().refreshHost(host);
                 }
 
                 hostsUpdating.setUpdating(false);

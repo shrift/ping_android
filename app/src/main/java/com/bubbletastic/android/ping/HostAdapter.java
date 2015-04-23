@@ -1,19 +1,12 @@
 package com.bubbletastic.android.ping;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.bubbletastic.android.ping.model.proto.HostStatus;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -95,66 +88,6 @@ public class HostAdapter extends BaseAdapter {
         return context;
     }
 
-    private class CheckIsReachable extends AsyncTask<Void, Void, HostStatus> {
-
-        private long updateStarted;
-        private TextView updateView;
-        private Host host;
-
-        public CheckIsReachable(Host host, TextView updateView) {
-            this.host = host;
-            this.updateView = updateView;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            updateView.setTag(host.getHostName());
-            updateView.setText(getContext().getString(R.string.host_updating));
-            updateStarted = System.currentTimeMillis();
-        }
-
-        @Override
-        protected HostStatus doInBackground(Void... voidness) {
-            HostStatus status = HostStatus.unknown;
-
-            InetAddress address = null;
-            try {
-                address = InetAddress.getByName(host.getHostName());
-            } catch (UnknownHostException e) {
-                System.err.println("Unknown host " + host.getHostName());
-                return HostStatus.unreachable;
-            }
-
-            //check the host 2 times
-            for (int i = 0; i < 2; i++) {
-                try {
-                    if (address.isReachable(3000)) {
-                        status = HostStatus.reachable;
-                    } else {
-                        status = HostStatus.unreachable;
-                    }
-                } catch (IOException e) {
-                    System.err.println("Unable to reach " + host.getHostName());
-                    status = HostStatus.unreachable;
-                    break;
-                }
-            }
-
-            return status;
-        }
-
-        @Override
-        protected void onPostExecute(HostStatus status) {
-
-            if (updateView.getTag().equals(host.getHostName())) {
-                host.setRefreshed(new Date());
-                host.setStatus(status);
-
-                updateHostStatusInfo(updateView, host);
-            }
-        }
-    }
-
     private void updateHostStatusInfo(TextView updateView, Host host) {
 //        String timeAgo = TimeUtil.getTimeAgo(host.getRefreshed().getTime());
 //        if (timeAgo != null && !timeAgo.trim().isEmpty()) {
@@ -162,7 +95,7 @@ public class HostAdapter extends BaseAdapter {
 //        }
 
         View indicator = ((View) updateView.getParent()).findViewById(R.id.host_item_list_status_indicator);
-        switch (host.getStatus()) {
+        switch (host.getCurrentStatus()) {
             case unreachable:
                 indicator.setBackgroundResource(R.drawable.round_indicator_host_unreachable);
                 updateView.setText(null);

@@ -4,35 +4,31 @@ package com.bubbletastic.android.ping.model.proto;
 
 import com.squareup.wire.Message;
 import com.squareup.wire.ProtoField;
+import java.util.Collections;
+import java.util.List;
 
-import static com.squareup.wire.Message.Datatype.ENUM;
-import static com.squareup.wire.Message.Datatype.INT64;
 import static com.squareup.wire.Message.Datatype.STRING;
+import static com.squareup.wire.Message.Label.REPEATED;
 
 public final class ProtoHost extends Message {
   private static final long serialVersionUID = 0L;
 
   public static final String DEFAULT_HOST_NAME = "";
-  public static final Long DEFAULT_REFRESHED = 0L;
-  public static final HostStatus DEFAULT_STATUS = HostStatus.unknown;
+  public static final List<PingResult> DEFAULT_RESULTS = Collections.emptyList();
 
   @ProtoField(tag = 1, type = STRING)
   public final String host_name;
 
-  @ProtoField(tag = 2, type = INT64)
-  public final Long refreshed;
+  @ProtoField(tag = 2, label = REPEATED, messageType = PingResult.class)
+  public final List<PingResult> results;
 
-  @ProtoField(tag = 3, type = ENUM)
-  public final HostStatus status;
-
-  public ProtoHost(String host_name, Long refreshed, HostStatus status) {
+  public ProtoHost(String host_name, List<PingResult> results) {
     this.host_name = host_name;
-    this.refreshed = refreshed;
-    this.status = status;
+    this.results = immutableCopyOf(results);
   }
 
   private ProtoHost(Builder builder) {
-    this(builder.host_name, builder.refreshed, builder.status);
+    this(builder.host_name, builder.results);
     setBuilder(builder);
   }
 
@@ -42,8 +38,7 @@ public final class ProtoHost extends Message {
     if (!(other instanceof ProtoHost)) return false;
     ProtoHost o = (ProtoHost) other;
     return equals(host_name, o.host_name)
-        && equals(refreshed, o.refreshed)
-        && equals(status, o.status);
+        && equals(results, o.results);
   }
 
   @Override
@@ -51,8 +46,7 @@ public final class ProtoHost extends Message {
     int result = hashCode;
     if (result == 0) {
       result = host_name != null ? host_name.hashCode() : 0;
-      result = result * 37 + (refreshed != null ? refreshed.hashCode() : 0);
-      result = result * 37 + (status != null ? status.hashCode() : 0);
+      result = result * 37 + (results != null ? results.hashCode() : 1);
       hashCode = result;
     }
     return result;
@@ -61,8 +55,7 @@ public final class ProtoHost extends Message {
   public static final class Builder extends Message.Builder<ProtoHost> {
 
     public String host_name;
-    public Long refreshed;
-    public HostStatus status;
+    public List<PingResult> results;
 
     public Builder() {
     }
@@ -71,8 +64,7 @@ public final class ProtoHost extends Message {
       super(message);
       if (message == null) return;
       this.host_name = message.host_name;
-      this.refreshed = message.refreshed;
-      this.status = message.status;
+      this.results = copyOf(message.results);
     }
 
     public Builder host_name(String host_name) {
@@ -80,13 +72,8 @@ public final class ProtoHost extends Message {
       return this;
     }
 
-    public Builder refreshed(Long refreshed) {
-      this.refreshed = refreshed;
-      return this;
-    }
-
-    public Builder status(HostStatus status) {
-      this.status = status;
+    public Builder results(List<PingResult> results) {
+      this.results = checkForNulls(results);
       return this;
     }
 
