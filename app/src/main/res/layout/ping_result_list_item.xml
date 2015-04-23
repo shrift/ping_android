@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeightSmall"
+    android:background="@drawable/list_selector"
+    android:orientation="horizontal">
+
+    <View
+        android:id="@+id/ping_result_list_item_host_status_indicator"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="?android:attr/listPreferredItemPaddingStart"
+        android:background="@drawable/round_indicator_unknown_normal" />
+
+    <TextView
+        android:id="@+id/ping_result_list_item_round_trip_avg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:gravity="center_vertical|start"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@android:color/secondary_text_light"
+        tools:text="80 ms" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/ping_result_list_item_pinged_at"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:gravity="center_vertical|start"
+        android:minHeight="?android:attr/listPreferredItemHeightSmall"
+        android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:text="@string/updated_unknown"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@android:color/secondary_text_light" />
+
+</LinearLayout>

@@ -1,5 +1,6 @@
 package com.bubbletastic.android.ping;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,12 +19,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bubbletastic.android.ping.view.EditTextBackEvent;
 import com.bubbletastic.android.ping.view.EditTextImeBackListener;
+import com.bubbletastic.android.ping.view.HostAdapter;
 import com.github.clans.fab.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 
@@ -32,6 +35,22 @@ import java.util.Collections;
 import java.util.List;
 
 public class HostListFragment extends PingFragment implements EditTextImeBackListener, BackPressedListener {
+
+    /**
+     * A dummy implementation of the {@link HostListCallbacks} interface that does
+     * nothing. Used only when this fragment is not attached to an activity.
+     */
+    private static HostListCallbacks dummyCallbacks = new HostListCallbacks() {
+        @Override
+        public void onItemSelected(String id) {
+        }
+    };
+
+    /**
+     * The fragment's current callback object, which is notified of list item
+     * clicks.
+     */
+    private HostListCallbacks callbacks = dummyCallbacks;
 
     private List<Host> hosts;
 
@@ -44,6 +63,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     private EditTextBackEvent addHostInput;
     private SwipeRefreshLayout swipeRefreshLayout;
     private Handler handler;
+
 
     public HostListFragment() {
     }
@@ -64,6 +84,18 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     public void onPause() {
         super.onPause();
         getApp().getBus().unregister(this);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Activities containing this fragment must implement its callbacks.
+        if (!(activity instanceof HostListCallbacks)) {
+            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        }
+
+        callbacks = (HostListCallbacks) activity;
     }
 
     @Subscribe
@@ -174,6 +206,12 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
 
         listView = (ListView) view.findViewById(R.id.list);
         listViewPaddingBottom = listView.getPaddingBottom();
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                callbacks.onItemSelected(adapter.getItem(position).getHostName());
+            }
+        });
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
             public void onItemCheckedStateChanged(ActionMode mode, int position,

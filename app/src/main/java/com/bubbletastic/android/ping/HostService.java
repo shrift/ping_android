@@ -218,6 +218,22 @@ public class HostService {
     }
 
     /**
+     * This method retrieves a host from persistent storage.
+     * This method may block if a write operation is in progress and therefore should not be called on the main thread.
+     *
+     * @return
+     */
+    public synchronized Host retrievePersistedHost(String hostName) {
+        List<Host> hosts = retrievePersistedHosts();
+        for (Host host : hosts) {
+            if (host.getHostName().equals(hostName)) {
+                return host;
+            }
+        }
+        return null;
+    }
+
+    /**
      * This method retrieves hosts from persistent storage.
      * This method may block if a write operation is in progress and therefore should not be called on the main thread.
      *

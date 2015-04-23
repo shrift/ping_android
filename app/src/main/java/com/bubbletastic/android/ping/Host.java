@@ -27,6 +27,7 @@ public class Host implements Comparable {
 
     public Host(ProtoHost protoHost) {
         this.hostName = protoHost.host_name;
+        this.results = new ArrayList<PingResult>(protoHost.results);
     }
 
     public ProtoHost toProtoHost() {
@@ -81,6 +82,8 @@ public class Host implements Comparable {
         if (results == null) {
             return new ArrayList<PingResult>();
         }
+        sortResultsByDate();
+        Collections.reverse(results);
         return results;
     }
 
