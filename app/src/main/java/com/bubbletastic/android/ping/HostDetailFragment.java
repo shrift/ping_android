@@ -68,6 +68,8 @@ public class HostDetailFragment extends PingFragment {
         if (!host.equals(this.host)) {
             return;
         }
+        this.host = host;
+
         //the bus may be delivering events from a different thread, so post to main thread handler
         handler.post(new Runnable() {
             @Override
