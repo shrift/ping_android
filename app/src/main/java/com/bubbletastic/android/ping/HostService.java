@@ -83,7 +83,7 @@ public class HostService {
             if (times.length > 0) {
                 int sum = 0;
                 for (int i = 0; i < times.length; i++) {
-                    sum += i;
+                    sum += times[i];
                 }
                 if (sum > 0) {
                     time = (int) ((double) sum / (double) times.length);
@@ -128,12 +128,13 @@ public class HostService {
             //check the host 4 times
             try {
                 long startTime = System.currentTimeMillis();
-                if (address.isReachable(timeout)) {
+                boolean reachable = address.isReachable(timeout);
+                long endTime = System.currentTimeMillis();
+                if (reachable) {
                     status = HostStatus.reachable;
                 } else {
                     status = HostStatus.unreachable;
                 }
-                long endTime = System.currentTimeMillis();
                 time = (int) (endTime - startTime);
             } catch (IOException e) {
                 status = HostStatus.unreachable;

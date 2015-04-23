@@ -72,17 +72,12 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         handler = new Handler();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         getApp().getBus().register(this);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onDestroy() {
+        super.onDestroy();
         getApp().getBus().unregister(this);
     }
 
@@ -96,6 +91,9 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
         }
 
         callbacks = (HostListCallbacks) activity;
+
+        //kick off an initial update of hosts when this fragment is shown
+        refreshHosts();
     }
 
     @Subscribe
@@ -148,6 +146,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
             @Override
             public void onRefresh() {
                 refreshHosts();
+                swipeRefreshLayout.setRefreshing(false);
             }
         });
 
@@ -267,8 +266,15 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     }
 
     private void refreshHosts() {
-        getApp().refreshHostsSoon();
-        swipeRefreshLayout.setRefreshing(true);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<Host> hosts = getApp().getHostService().retrievePersistedHosts();
+                for (Host host : hosts) {
+                    getApp().getHostService().refreshHost(host);
+                }
+            }
+        }).start();
     }
 
     private void deleteSelectedHosts() {
