@@ -72,7 +72,6 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         handler = new Handler();
-        getApp().getBus().register(this);
     }
 
     @Override
@@ -260,6 +259,9 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
         adapter = createAdapter();
         listView.setAdapter(adapter);
 
+
+        //don't register for host updates until our views have been configured
+        getApp().getBus().register(this);
 
         retrievePersistedHosts();
         return view;

@@ -1,14 +1,19 @@
 package com.bubbletastic.android.ping;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bubbletastic.android.ping.model.proto.PingResult;
 import com.bubbletastic.android.ping.view.HostViewHolder;
 import com.bubbletastic.android.ping.view.PingResultAdapter;
+import com.squareup.otto.Subscribe;
+
+import java.util.List;
 
 /**
  * A fragment representing a single Host detail screen.
@@ -29,6 +34,9 @@ public class HostDetailFragment extends PingFragment {
     private Host host;
     private ListView listView;
     private PingResultAdapter adapter;
+    private HostViewHolder hostViewHolder;
+    private List<PingResult> results;
+    private Handler handler;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -45,6 +53,28 @@ public class HostDetailFragment extends PingFragment {
             String hostName = getArguments().getString(ARG_ITEM_ID);
             host = getApp().getHostService().retrievePersistedHost(hostName);
         }
+
+        handler = new Handler();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getApp().getBus().unregister(this);
+    }
+
+    @Subscribe
+    public void hostUpdated(final Host host) {
+        if (!host.equals(this.host)) {
+            return;
+        }
+        //the bus may be delivering events from a different thread, so post to main thread handler
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                refreshResults();
+            }
+        });
     }
 
     @Override
@@ -52,23 +82,36 @@ public class HostDetailFragment extends PingFragment {
 
         View rootView = inflater.inflate(R.layout.fragment_host_detail, container, false);
 
-        View indicator = rootView.findViewById(R.id.host_item_list_status_indicator);
-        TextView hostName = (TextView) rootView.findViewById(R.id.host_item_list_hostname);
-        TextView updated = (TextView) rootView.findViewById(R.id.host_item_list_updated);
+        hostViewHolder = new HostViewHolder();
+        hostViewHolder.indicator = rootView.findViewById(R.id.host_item_list_status_indicator);
+        hostViewHolder.hostName = (TextView) rootView.findViewById(R.id.host_item_list_hostname);
+        hostViewHolder.updated = (TextView) rootView.findViewById(R.id.host_item_list_updated);
 
-        HostViewHolder hostViewHolder = new HostViewHolder();
-        hostViewHolder.indicator = indicator;
-        hostViewHolder.hostName = hostName;
-        hostViewHolder.updated = updated;
-
-        hostName.setText(host.toString());
-        hostViewHolder.updateHostStatusInfo(host);
-        updated.setVisibility(View.GONE);
+        updateHostHeader();
 
         listView = (ListView) rootView.findViewById(R.id.list);
-        adapter = new PingResultAdapter(getActivity().getApplicationContext(), host.getResults());
+        results = host.getResults();
+        adapter = new PingResultAdapter(getActivity().getApplicationContext(), results);
         listView.setAdapter(adapter);
 
+        //don't register for host updates until our views have been configured
+        getApp().getBus().register(this);
+
         return rootView;
+    }
+
+    private void updateHostHeader() {
+        hostViewHolder.updated.setVisibility(View.GONE);
+        hostViewHolder.hostName.setText(host.toString());
+        hostViewHolder.updateHostStatusInfo(host);
+    }
+
+    private void refreshResults() {
+        if (adapter == null) {
+            return;
+        }
+        results.clear();
+        results.addAll(host.getResults());
+        adapter.notifyDataSetChanged();
     }
 }
