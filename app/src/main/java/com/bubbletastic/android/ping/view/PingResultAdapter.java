@@ -76,7 +76,12 @@ public class PingResultAdapter extends BaseAdapter {
         PingResult pingResult = (PingResult) getItem(position);
 
         indicator.setBackgroundResource(R.drawable.round_indicator_host_unknown);
-        roundTripAvg.setText(pingResult.round_trip_avg + " ms");
+        if (pingResult.round_trip_avg == null) {
+            roundTripAvg.setVisibility(View.INVISIBLE);
+        } else {
+            roundTripAvg.setText(pingResult.round_trip_avg + " ms");
+            roundTripAvg.setVisibility(View.VISIBLE);
+        }
 
         pingResultViewHolder.updatePingResultStatusInfo(pingResult);
 
