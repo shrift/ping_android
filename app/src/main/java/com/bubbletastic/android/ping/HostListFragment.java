@@ -273,7 +273,9 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
             public void run() {
                 List<Host> hosts = getApp().getHostService().retrievePersistedHosts();
                 for (Host host : hosts) {
-                    getApp().getHostService().refreshHost(host);
+                    if (getActivity() != null) {
+                        getApp().getHostService().refreshHost(host);
+                    }
                 }
             }
         }).start();
