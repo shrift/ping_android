@@ -28,8 +28,8 @@ public class Ping extends Application {
 
         JobInfo updateHostsJob = new JobInfo.Builder(UpdateHostsService.JOB_ID, new ComponentName(this, UpdateHostsService.class))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                        //update hosts once a minute
-                .setPeriodic(60000)
+                        //update hosts once every 4 minutes
+                .setPeriodic(240000)
                         //service scheduling should survive reboots
                 .setPersisted(true)
                 .build();
