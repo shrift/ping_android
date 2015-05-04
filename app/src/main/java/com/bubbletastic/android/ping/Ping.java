@@ -4,7 +4,6 @@ import android.app.Application;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
-import android.content.Context;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
@@ -35,8 +34,8 @@ public class Ping extends Application {
                 .build();
 
         //schedule the update hosts job
-        jobScheduler = ((JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE));
-        jobScheduler.schedule(updateHostsJob);
+//        jobScheduler = ((JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE));
+//        jobScheduler.schedule(updateHostsJob);
     }
 
     public Bus getBus() {
