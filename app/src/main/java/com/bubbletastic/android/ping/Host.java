@@ -15,7 +15,7 @@ import java.util.List;
 public class Host implements Comparable {
 
     private String hostName;
-    private List<PingResult> results;
+    private List<PingResult> results = new ArrayList<>();
     private HostStatus currentStatus;
 
     public Host() {
