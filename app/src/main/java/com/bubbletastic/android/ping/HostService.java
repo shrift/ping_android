@@ -9,7 +9,6 @@ import com.bubbletastic.android.ping.model.proto.HostStatus;
 import com.bubbletastic.android.ping.model.proto.HostsContainer;
 import com.bubbletastic.android.ping.model.proto.PingResult;
 import com.bubbletastic.android.ping.model.proto.ProtoHost;
-import com.squareup.wire.Wire;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -245,9 +244,8 @@ public class HostService {
         String hostsJson = prefs.getString(PREF_KEY_HOSTS, null);
         if (hostsJson != null) {
             byte[] bytes = Base64.decode(hostsJson, Base64.NO_WRAP);
-            Wire wire = new Wire();
             try {
-                HostsContainer hostsContainer = wire.parseFrom(bytes, HostsContainer.class);
+                HostsContainer hostsContainer = HostsContainer.ADAPTER.decode(bytes);
                 for (ProtoHost protoHost : hostsContainer.hosts) {
                     hosts.add(new Host(protoHost));
                 }
@@ -270,7 +268,8 @@ public class HostService {
             protoHosts.add(host.toProtoHost());
         }
 
-        byte[] bytes = new HostsContainer.Builder().hosts(protoHosts).build().toByteArray();
+        HostsContainer hostsContainer = new HostsContainer.Builder().hosts(protoHosts).build();
+        byte[] bytes = HostsContainer.ADAPTER.encode(hostsContainer);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PREF_KEY_HOSTS, Base64.encodeToString(bytes, Base64.NO_WRAP));
         editor.commit();
