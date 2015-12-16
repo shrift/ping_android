@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -27,7 +28,6 @@ import android.widget.TextView;
 import com.bubbletastic.android.ping.view.EditTextBackEvent;
 import com.bubbletastic.android.ping.view.EditTextImeBackListener;
 import com.bubbletastic.android.ping.view.HostAdapter;
-import com.github.clans.fab.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;

@@ -1,10 +1,10 @@
 package com.bubbletastic.android.ping;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
-public class HostListActivity extends Activity implements HostListCallbacks {
+public class HostListActivity extends AppCompatActivity implements HostListCallbacks {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
