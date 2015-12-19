@@ -1,9 +1,11 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.userinterface;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+
+import com.bubbletastic.android.ping.R;
 
 
 /**

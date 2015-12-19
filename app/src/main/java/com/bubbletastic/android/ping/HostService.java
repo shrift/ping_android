@@ -1,8 +1,11 @@
 package com.bubbletastic.android.ping;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 
 import com.bubbletastic.android.ping.model.proto.HostStatus;
@@ -27,6 +30,7 @@ public class HostService {
     private static HostService instance;
     private Context context;
     private SharedPreferences prefs;
+    private SharedPreferences defaultSharedPrefs;
 
     private HostService() {
     }
@@ -36,6 +40,7 @@ public class HostService {
             instance = new HostService();
             instance.context = context;
             instance.prefs = instance.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            instance.defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         }
         return instance;
     }
@@ -44,8 +49,8 @@ public class HostService {
      * This method will check that the passed host is reachable as many times as configured to count as "refreshed".
      * This operation performs calls on the network and should not be performed on the main thread.
      *
-     * @param host
-     * @return
+     * @param host The host to refresh.
+     * @return The refreshed Host.
      */
     public Host refreshHost(Host host) {
         Ping ping = (Ping) context;
@@ -62,8 +67,9 @@ public class HostService {
             status = HostStatus.unreachable;
         }
 
-        //check the host 4 times
-        int attempts = 4;
+        int attempts = (int) defaultSharedPrefs.getLong(
+                context.getString(R.string.pref_key_ping_refresh_count),
+                context.getResources().getInteger(R.integer.default_ping_refresh_count));
 
         int[] times = new int[attempts];
         Integer time = null;
@@ -101,20 +107,39 @@ public class HostService {
 
         updateHost(host);
 
+        postNotification(host);
+
         return host;
+    }
+
+    /**
+     * Shows notifications for hosts depending on preferences.
+     * @param host The host to evaluate for notification.
+     */
+    private void postNotification(Host host) {
+        if (defaultSharedPrefs.getBoolean(context.getString(R.string.pref_key_show_unreachable_notifications), true) &&
+                host.getCurrentStatus().equals(HostStatus.unreachable)) {
+
+            Notification notification = new Notification.Builder(context)
+                    .setContentTitle(context.getString(R.string.host_unreachable_notification_title).replace("$hostName$", host.getHostName()))
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .build();
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(
+                    host.getHostName().hashCode() + host.getCurrentStatus().getValue() + host.getResults().size(),
+                    notification);
+        }
     }
 
     /**
      * This method will ping the passed host.
      * This operation performs calls on the network and should not be performed on the main thread.
      *
-     * @param host
+     * @param host The Host to ping.
      * @param timeout How long to wait for a ping response before giving up.
-     * @return
+     * @return The PingResult from pinging the Host.
      */
     private PingResult pingHost(Host host, int timeout) {
-        Ping ping = (Ping) context;
-
         HostStatus status = HostStatus.unknown;
         InetAddress address = null;
         Integer time = null;

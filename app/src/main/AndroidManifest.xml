@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bubbletastic.android.ping">
+<manifest package="com.bubbletastic.android.ping"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
 
@@ -14,27 +15,36 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".HostListActivity"
+            android:name=".userinterface.HostListActivity"
             android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".HostDetailActivity"
+            android:name=".userinterface.HostDetailActivity"
             android:label="@string/title_host_detail"
-            android:parentActivityName=".HostListActivity">
+            android:parentActivityName=".userinterface.HostListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".HostListActivity" />
+                android:value=".userinterface.HostListActivity"/>
+        </activity>
+
+        <activity
+            android:name=".userinterface.SettingsActivity"
+            android:label="@string/title_settings_activity"
+            android:parentActivityName=".userinterface.HostListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".userinterface.HostListActivity"/>
         </activity>
 
         <service
-            android:name=".UpdateHostsService"
+            android:name=".RefreshHostsService"
             android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
     </application>
 
 </manifest>

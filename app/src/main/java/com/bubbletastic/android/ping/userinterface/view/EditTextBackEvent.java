@@ -1,4 +1,4 @@
-package com.bubbletastic.android.ping.view;
+package com.bubbletastic.android.ping.userinterface.view;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -1,4 +1,4 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.userinterface;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.bubbletastic.android.ping.R;
 
 public class HostListActivity extends AppCompatActivity implements HostListCallbacks {
 
@@ -32,11 +34,7 @@ public class HostListActivity extends AppCompatActivity implements HostListCallb
     public void onBackPressed() {
         boolean handled = hostListFragment.backPressed();
         if (!handled) {
-            if(getFragmentManager().getBackStackEntryCount() != 0) {
-                getFragmentManager().popBackStack();
-            } else {
-                super.onBackPressed();
-            }
+            super.onBackPressed();
         }
     }
 
@@ -78,10 +76,8 @@ public class HostListActivity extends AppCompatActivity implements HostListCallb
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_settings:
-                getFragmentManager().beginTransaction()
-                        .replace(android.R.id.content, new SettingsFragment())
-                        .addToBackStack(null)
-                        .commit();
+                Intent detailIntent = new Intent(this, SettingsActivity.class);
+                startActivity(detailIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -1,4 +1,4 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.userinterface;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -24,9 +24,11 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bubbletastic.android.ping.view.EditTextBackEvent;
-import com.bubbletastic.android.ping.view.EditTextImeBackListener;
-import com.bubbletastic.android.ping.view.HostAdapter;
+import com.bubbletastic.android.ping.Host;
+import com.bubbletastic.android.ping.R;
+import com.bubbletastic.android.ping.userinterface.view.EditTextBackEvent;
+import com.bubbletastic.android.ping.userinterface.view.EditTextImeBackListener;
+import com.bubbletastic.android.ping.userinterface.view.HostAdapter;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -302,7 +304,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     }
 
     private void showAddHostInput() {
-        addAddInputView();
+        displayAddInputView();
         scrollAddHostInputIntoView();
         addHostFab.setVisibility(View.GONE);
         listView.setPadding(
@@ -398,7 +400,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     /**
      * Abstracted so that logic is not tied to where in the layout the input view is.
      */
-    private void addAddInputView() {
+    private void displayAddInputView() {
 //        listView.addFooterView(headerAddInputView);
         headerAddInputView.setVisibility(View.VISIBLE);
     }

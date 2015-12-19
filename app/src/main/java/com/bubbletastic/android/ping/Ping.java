@@ -38,21 +38,16 @@ public class Ping extends Application implements SharedPreferences.OnSharedPrefe
     }
 
     private void scheduleHostRefreshJob() {
-        long intervalSeconds = sharedPref.getLong(
+        long intervalMilliSeconds = sharedPref.getLong(
                 getString(R.string.pref_key_global_refresh_interval),
                 getResources().getInteger(R.integer.default_refresh_interval))
                 * 1000;
 
         int networkType;
-        if (!sharedPref.getBoolean(getString(R.string.pref_key_wifi_only), false)) {
-            networkType = JobInfo.NETWORK_TYPE_ANY;
-        } else {
-            networkType = JobInfo.NETWORK_TYPE_UNMETERED;
-        }
-
-        JobInfo updateHostsJob = new JobInfo.Builder(UpdateHostsService.JOB_ID, new ComponentName(this, UpdateHostsService.class))
-                .setRequiredNetworkType(networkType)
-                .setPeriodic(intervalSeconds)
+        boolean wifiOnly = sharedPref.getBoolean(getString(R.string.pref_key_wifi_only), false);
+        JobInfo updateHostsJob = new JobInfo.Builder(RefreshHostsService.JOB_ID, new ComponentName(this, RefreshHostsService.class))
+                .setRequiredNetworkType(wifiOnly ? JobInfo.NETWORK_TYPE_UNMETERED : JobInfo.NETWORK_TYPE_ANY)
+                .setPeriodic(intervalMilliSeconds)
                         //service scheduling should survive reboots
                 .setPersisted(true)
                 .build();
@@ -61,7 +56,7 @@ public class Ping extends Application implements SharedPreferences.OnSharedPrefe
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        jobScheduler.cancel(UpdateHostsService.JOB_ID);
+        jobScheduler.cancel(RefreshHostsService.JOB_ID);
         scheduleHostRefreshJob();
     }
 

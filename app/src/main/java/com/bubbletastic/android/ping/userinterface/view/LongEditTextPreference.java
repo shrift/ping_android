@@ -1,4 +1,4 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.userinterface.view;
 
 import android.content.Context;
 import android.preference.EditTextPreference;

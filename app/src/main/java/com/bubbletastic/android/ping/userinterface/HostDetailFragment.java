@@ -1,4 +1,4 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.userinterface;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,9 +8,11 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bubbletastic.android.ping.Host;
+import com.bubbletastic.android.ping.R;
 import com.bubbletastic.android.ping.model.proto.PingResult;
-import com.bubbletastic.android.ping.view.HostViewHolder;
-import com.bubbletastic.android.ping.view.PingResultAdapter;
+import com.bubbletastic.android.ping.userinterface.view.HostViewHolder;
+import com.bubbletastic.android.ping.userinterface.view.PingResultAdapter;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -53,6 +55,8 @@ public class HostDetailFragment extends PingFragment {
             String hostName = getArguments().getString(ARG_ITEM_ID);
             host = getApp().getHostService().retrievePersistedHost(hostName);
         }
+
+        getActivity().setTitle(host.getHostName());
 
         handler = new Handler();
     }

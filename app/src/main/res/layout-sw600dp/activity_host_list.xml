@@ -6,7 +6,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context=".HostListActivity">
+    tools:context=".userinterface.HostListActivity">
 
     <!--
     This layout is a two-pane layout for the Hosts
@@ -16,7 +16,7 @@
 
     <fragment
         android:id="@+id/host_list"
-        android:name="com.bubbletastic.android.ping.HostListFragment"
+        android:name="com.bubbletastic.android.ping.userinterface.HostListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

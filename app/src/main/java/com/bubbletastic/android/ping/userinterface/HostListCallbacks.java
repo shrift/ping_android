@@ -1,4 +1,4 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.userinterface;
 
 /**
  * Created by brendanmartens on 4/22/15.

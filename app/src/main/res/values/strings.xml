@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ping</string>
     <string name="title_host_detail">Host Detail</string>
+    <string name="title_settings_activity">Settings</string>
     <string name="updated_unknown">unknown</string>
     <string name="fragment_host_list_add_hint">Add Host</string>
 
@@ -15,10 +16,18 @@
 
     <string name="pref_key_global_refresh_interval">global_refresh_interval</string>
     <string name="pref_key_wifi_only">wifi_only</string>
+    <string name="pref_key_ping_refresh_count">ping_refresh_count</string>
 
     <string name="ping_interval_title">Set ping interval</string>
     <string name="ping_interval_summary">Refresh every $seconds$ seconds.</string>
     <string name="ping_wifi_only_title">Wifi only</string>
     <string name="ping_wifi_only_summary_off">Will ping whenever there is a network connection.</string>
     <string name="ping_wifi_only_summary_on">Will only ping when there is a wifi connection.</string>
+    <string name="ping_refresh_count_summary">Every time a host is refreshed it will be pinged $count$ times.</string>
+    <string name="ping_refresh_count_title">Host refresh ping count</string>
+    <string name="show_unreachable_notifications_title">Unreachable host notification</string>
+    <string name="show_unreachable_notifications_summary_on">Will show a notification every time a host was unreachable.</string>
+    <string name="show_unreachable_notifications_summary_off">Will not show unreachable host notifications.</string>
+    <string name="pref_key_show_unreachable_notifications">show_unreachable_notifications</string>
+    <string name="host_unreachable_notification_title">$hostName$ was unreachable!</string>
 </resources>

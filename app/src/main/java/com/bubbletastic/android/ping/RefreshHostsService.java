@@ -3,13 +3,15 @@ package com.bubbletastic.android.ping;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 
+import com.bubbletastic.android.ping.userinterface.HostsUpdating;
+
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by brendanmartens on 4/13/15.
  */
-public class UpdateHostsService extends JobService {
+public class RefreshHostsService extends JobService {
 
     public static final int JOB_ID = 0;
 

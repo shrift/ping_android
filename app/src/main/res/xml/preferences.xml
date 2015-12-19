@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.bubbletastic.android.ping.LongEditTextPreference
+    <com.bubbletastic.android.ping.userinterface.view.LongEditTextPreference
         android:defaultValue="@integer/default_refresh_interval"
         android:dialogTitle="@string/ping_interval_title"
         android:inputType="number"
@@ -16,4 +16,18 @@
         android:summaryOn="@string/ping_wifi_only_summary_on"
         android:title="@string/ping_wifi_only_title" />
 
+    <com.bubbletastic.android.ping.userinterface.view.LongEditTextPreference
+        android:defaultValue="@integer/default_ping_refresh_count"
+        android:dialogTitle="@string/ping_refresh_count_title"
+        android:inputType="number"
+        android:key="@string/pref_key_ping_refresh_count"
+        android:summary="@string/ping_refresh_count_summary"
+        android:title="@string/ping_refresh_count_title" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/pref_key_show_unreachable_notifications"
+        android:summaryOff="@string/show_unreachable_notifications_summary_off"
+        android:summaryOn="@string/show_unreachable_notifications_summary_on"
+        android:title="@string/show_unreachable_notifications_title"/>
 </PreferenceScreen>
