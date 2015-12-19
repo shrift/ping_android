@@ -1,6 +1,5 @@
 package com.bubbletastic.android.ping;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -81,15 +80,15 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
         // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof HostListCallbacks)) {
+        if (!(context instanceof HostListCallbacks)) {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
         }
 
-        callbacks = (HostListCallbacks) activity;
+        callbacks = (HostListCallbacks) context;
 
         //kick off an initial update of hosts when this fragment is shown
         refreshHosts();
@@ -212,8 +211,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
         });
         listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             @Override
-            public void onItemCheckedStateChanged(ActionMode mode, int position,
-                                                  long id, boolean checked) {
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
                 // Here you can do something when items are selected/de-selected,
                 // such as update the title in the CAB
             }
@@ -235,7 +233,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 // Inflate the menu for the CAB
                 MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.host_list_menu, menu);
+                inflater.inflate(R.menu.host_list_cab_menu, menu);
                 return true;
             }
 
@@ -272,6 +270,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
             @Override
             public void run() {
                 List<Host> hosts = getApp().getHostService().retrievePersistedHosts();
+                Collections.sort(hosts);
                 for (Host host : hosts) {
                     if (getActivity() != null) {
                         getApp().getHostService().refreshHost(host);

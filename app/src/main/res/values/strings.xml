@@ -8,6 +8,17 @@
     <string name="loading">Loading\u2026</string>
     <string name="fragment_host_list_add_action_label">Add</string>
 
+    <string name="host_updating">pinging…</string>
+
     <string name="menu_delete">delete</string>
-    <string name="host_updating">pinging...</string>
+    <string name="menu_settings">delete</string>
+
+    <string name="pref_key_global_refresh_interval">global_refresh_interval</string>
+    <string name="pref_key_wifi_only">wifi_only</string>
+
+    <string name="ping_interval_title">Set ping interval</string>
+    <string name="ping_interval_summary">Refresh every $seconds$ seconds.</string>
+    <string name="ping_wifi_only_title">Wifi only</string>
+    <string name="ping_wifi_only_summary_off">Will ping whenever there is a network connection.</string>
+    <string name="ping_wifi_only_summary_on">Will only ping when there is a wifi connection.</string>
 </resources>

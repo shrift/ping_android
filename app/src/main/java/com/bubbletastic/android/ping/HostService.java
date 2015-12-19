@@ -79,10 +79,11 @@ public class HostService {
                 times[i] = pingResult.round_trip_avg;
             }
 
+            //Calculate the average round trip time if more than one attempt was made.
             if (times.length > 0) {
                 int sum = 0;
-                for (int i = 0; i < times.length; i++) {
-                    sum += times[i];
+                for (int attempt : times) {
+                    sum += attempt;
                 }
                 if (sum > 0) {
                     time = (int) ((double) sum / (double) times.length);
@@ -124,7 +125,6 @@ public class HostService {
         }
 
         if (address != null) {
-            //check the host 4 times
             try {
                 long startTime = System.currentTimeMillis();
                 boolean reachable = address.isReachable(timeout);

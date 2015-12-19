@@ -3,6 +3,9 @@ package com.bubbletastic.android.ping;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class HostListActivity extends AppCompatActivity implements HostListCallbacks {
 
@@ -29,7 +32,11 @@ public class HostListActivity extends AppCompatActivity implements HostListCallb
     public void onBackPressed() {
         boolean handled = hostListFragment.backPressed();
         if (!handled) {
-            super.onBackPressed();
+            if(getFragmentManager().getBackStackEntryCount() != 0) {
+                getFragmentManager().popBackStack();
+            } else {
+                super.onBackPressed();
+            }
         }
     }
 
@@ -57,6 +64,27 @@ public class HostListActivity extends AppCompatActivity implements HostListCallb
             Intent detailIntent = new Intent(this, HostDetailActivity.class);
             detailIntent.putExtra(HostDetailFragment.ARG_ITEM_ID, id);
             startActivity(detailIntent);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.host_list_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                getFragmentManager().beginTransaction()
+                        .replace(android.R.id.content, new SettingsFragment())
+                        .addToBackStack(null)
+                        .commit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

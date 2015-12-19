@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.bubbletastic.android.ping.LongEditTextPreference
+        android:defaultValue="@integer/default_refresh_interval"
+        android:dialogTitle="@string/ping_interval_title"
+        android:inputType="number"
+        android:key="@string/pref_key_global_refresh_interval"
+        android:summary="@string/ping_interval_summary"
+        android:title="@string/ping_interval_title" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/pref_key_wifi_only"
+        android:summaryOff="@string/ping_wifi_only_summary_off"
+        android:summaryOn="@string/ping_wifi_only_summary_on"
+        android:title="@string/ping_wifi_only_title" />
+
+</PreferenceScreen>
