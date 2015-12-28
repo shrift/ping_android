@@ -42,7 +42,7 @@
         </activity>
 
         <service
-            android:name=".RefreshHostsService"
+            android:name=".RefreshHostsJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
     </application>
