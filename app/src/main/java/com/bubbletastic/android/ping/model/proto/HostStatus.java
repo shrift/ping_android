@@ -13,7 +13,9 @@ public enum HostStatus implements WireEnum {
 
   unreachable(2),
 
-  updating(3);
+  updating(3),
+
+  disconnected(4);
 
   public static final ProtoAdapter<HostStatus> ADAPTER = ProtoAdapter.newEnumAdapter(HostStatus.class);
 
@@ -32,6 +34,7 @@ public enum HostStatus implements WireEnum {
       case 1: return reachable;
       case 2: return unreachable;
       case 3: return updating;
+      case 4: return disconnected;
       default: return null;
     }
   }

@@ -31,6 +31,9 @@ public class PingResultViewHolder {
             case updating:
                 indicator.setBackgroundResource(R.drawable.round_indicator_host_unknown);
                 break;
+            case disconnected:
+                indicator.setBackgroundResource(R.drawable.round_indicator_host_disconnected);
+                break;
             default:
                 indicator.setBackgroundResource(R.drawable.round_indicator_host_unknown);
                 break;

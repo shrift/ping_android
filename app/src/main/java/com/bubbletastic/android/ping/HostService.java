@@ -5,6 +5,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
@@ -122,7 +124,7 @@ public class HostService {
 
             Notification notification = new Notification.Builder(context)
                     .setContentTitle(context.getString(R.string.host_unreachable_notification_title).replace("$hostName$", host.getHostName()))
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.ic_stat_name)
                     .build();
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(
@@ -143,10 +145,15 @@ public class HostService {
         HostStatus status = HostStatus.unknown;
         InetAddress address = null;
         Integer time = null;
-        try {
-            address = InetAddress.getByName(host.getHostName());
-        } catch (UnknownHostException e) {
-            status = HostStatus.unreachable;
+
+        if (isNetworkAvailable()) {
+            try {
+                address = InetAddress.getByName(host.getHostName());
+            } catch (UnknownHostException e) {
+                status = HostStatus.unreachable;
+            }
+        } else {
+            status = HostStatus.disconnected;
         }
 
         if (address != null) {
@@ -166,6 +173,12 @@ public class HostService {
         }
 
         return new PingResult.Builder().pinged_at(System.currentTimeMillis()).status(status).round_trip_avg(time).build();
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     /**

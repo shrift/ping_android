@@ -45,7 +45,7 @@ public class Ping extends Application implements SharedPreferences.OnSharedPrefe
 
         int networkType;
         boolean wifiOnly = sharedPref.getBoolean(getString(R.string.pref_key_wifi_only), false);
-        JobInfo updateHostsJob = new JobInfo.Builder(RefreshHostsService.JOB_ID, new ComponentName(this, RefreshHostsService.class))
+        JobInfo updateHostsJob = new JobInfo.Builder(RefreshHostsJobService.JOB_ID, new ComponentName(this, RefreshHostsJobService.class))
                 .setRequiredNetworkType(wifiOnly ? JobInfo.NETWORK_TYPE_UNMETERED : JobInfo.NETWORK_TYPE_ANY)
                 .setPeriodic(intervalMilliSeconds)
                         //service scheduling should survive reboots
@@ -56,7 +56,7 @@ public class Ping extends Application implements SharedPreferences.OnSharedPrefe
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        jobScheduler.cancel(RefreshHostsService.JOB_ID);
+        jobScheduler.cancel(RefreshHostsJobService.JOB_ID);
         scheduleHostRefreshJob();
     }
 
