@@ -21,7 +21,6 @@ public class HostAdapter extends BaseAdapter {
     private Context context;
 
     public HostAdapter(Context context, List<Host> hosts) {
-//        super(context, R.layout.host_list_item, android.R.id.text1, hosts);
         this.hosts = hosts;
         this.context = context;
     }

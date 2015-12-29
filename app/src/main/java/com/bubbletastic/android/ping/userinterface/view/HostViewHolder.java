@@ -29,6 +29,10 @@ public class HostViewHolder {
                 indicator.setBackgroundResource(R.drawable.round_indicator_host_reachable);
                 updated.setText(null);
                 break;
+            case disconnected:
+                indicator.setBackgroundResource(R.drawable.round_indicator_host_disconnected);
+                updated.setText(updated.getContext().getString(R.string.host_disconnected));
+                break;
             case updating:
                 indicator.setBackgroundResource(R.drawable.round_indicator_host_unknown);
                 updated.setText(updated.getContext().getString(R.string.host_updating));

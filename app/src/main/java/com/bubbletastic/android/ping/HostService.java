@@ -62,11 +62,15 @@ public class HostService {
         ping.getBus().post(host);
 
         InetAddress address = null;
-        try {
-            address = InetAddress.getByName(host.getHostName());
-        } catch (UnknownHostException e) {
-            System.err.println("Unknown host " + host.getHostName());
-            status = HostStatus.unreachable;
+        if (isNetworkAvailable()) {
+            try {
+                address = InetAddress.getByName(host.getHostName());
+            } catch (UnknownHostException e) {
+                System.err.println("Unknown host " + host.getHostName());
+                status = HostStatus.unreachable;
+            }
+        } else {
+            status = HostStatus.disconnected;
         }
 
         int attempts = (int) defaultSharedPrefs.getLong(
@@ -116,6 +120,7 @@ public class HostService {
 
     /**
      * Shows notifications for hosts depending on preferences.
+     *
      * @param host The host to evaluate for notification.
      */
     private void postNotification(Host host) {
@@ -137,7 +142,7 @@ public class HostService {
      * This method will ping the passed host.
      * This operation performs calls on the network and should not be performed on the main thread.
      *
-     * @param host The Host to ping.
+     * @param host    The Host to ping.
      * @param timeout How long to wait for a ping response before giving up.
      * @return The PingResult from pinging the Host.
      */
@@ -146,14 +151,10 @@ public class HostService {
         InetAddress address = null;
         Integer time = null;
 
-        if (isNetworkAvailable()) {
-            try {
-                address = InetAddress.getByName(host.getHostName());
-            } catch (UnknownHostException e) {
-                status = HostStatus.unreachable;
-            }
-        } else {
-            status = HostStatus.disconnected;
+        try {
+            address = InetAddress.getByName(host.getHostName());
+        } catch (UnknownHostException e) {
+            status = HostStatus.unreachable;
         }
 
         if (address != null) {
