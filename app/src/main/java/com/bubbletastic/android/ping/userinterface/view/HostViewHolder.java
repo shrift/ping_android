@@ -15,10 +15,6 @@ public class HostViewHolder {
     public View indicator;
 
     public void updateHostStatusInfo(Host host) {
-//        String timeAgo = TimeUtil.getTimeAgo(host.getRefreshed().getTime());
-//        if (timeAgo != null && !timeAgo.trim().isEmpty()) {
-//            updateView.setText(timeAgo);
-//        }
 
         switch (host.getCurrentStatus()) {
             case unreachable:
