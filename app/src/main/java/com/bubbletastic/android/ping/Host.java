@@ -16,7 +16,7 @@ public class Host implements Comparable {
 
     private String hostName;
     private List<PingResult> results = new ArrayList<>();
-    private HostStatus currentStatus  = HostStatus.unknown;
+    private HostStatus currentStatus;
 
     public Host() {
     }
@@ -103,13 +103,16 @@ public class Host implements Comparable {
     }
 
     public HostStatus getCurrentStatus() {
-        if (results != null && results.size() > 0) {
+        if (currentStatus == null && results != null && results.size() > 0) {
             sortResultsByDate();
             Collections.reverse(results);
             PingResult mostRecentResult = results.get(0);
             if (mostRecentResult.status != null) {
                 return mostRecentResult.status;
             }
+            return HostStatus.unknown;
+        }
+        if (currentStatus == null) {
             return HostStatus.unknown;
         }
         return currentStatus;
