@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.bubbletastic.android.ping"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="com.bubbletastic.android.ping"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -39,6 +40,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".userinterface.HostListActivity"/>
+        </activity>
+
+        <activity
+            android:name=".userinterface.HostSettingsActivity"
+            android:label="@string/title_host_settings_activity"
+            android:parentActivityName=".userinterface.HostDetailActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".userinterface.HostDetailActivity"/>
         </activity>
 
         <service

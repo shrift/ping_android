@@ -2,6 +2,7 @@
     <string name="app_name">ping</string>
     <string name="title_host_detail">Host Detail</string>
     <string name="title_settings_activity">Settings</string>
+    <string name="title_host_settings_activity">settings</string>
     <string name="fragment_host_list_add_hint">Add Host</string>
 
     <!-- Text shown by list fragment when waiting for data to display. -->
@@ -18,6 +19,7 @@
     <string name="pref_key_global_refresh_interval">global_refresh_interval</string>
     <string name="pref_key_wifi_only">wifi_only</string>
     <string name="pref_key_ping_refresh_count">ping_refresh_count</string>
+    <string name="pref_key_host_show_notification">show_notification</string>
 
     <string name="ping_interval_title">Set ping interval</string>
     <string name="ping_interval_summary">Refresh every $seconds$ seconds.</string>
@@ -31,4 +33,7 @@
     <string name="show_unreachable_notifications_summary_off">Will not show unreachable host notifications.</string>
     <string name="pref_key_show_unreachable_notifications">show_unreachable_notifications</string>
     <string name="host_unreachable_notification_title">$hostName$ was unreachable!</string>
+    <string name="host_show_notification_title">Show Notifications</string>
+    <string name="host_show_notification_summary_on">Notifications will be shown for this host.</string>
+    <string name="host_show_notification_summary_off">Notifications will not be shown for this host.</string>
 </resources>

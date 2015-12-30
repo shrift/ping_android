@@ -1,5 +1,7 @@
 package com.bubbletastic.android.ping;
 
+import android.support.annotation.NonNull;
+
 import com.bubbletastic.android.ping.model.proto.HostStatus;
 import com.bubbletastic.android.ping.model.proto.PingResult;
 import com.bubbletastic.android.ping.model.proto.ProtoHost;
@@ -17,6 +19,7 @@ public class Host implements Comparable {
     private String hostName;
     private List<PingResult> results = new ArrayList<>();
     private HostStatus currentStatus;
+    private boolean showNotification = true;
 
     public Host() {
     }
@@ -28,11 +31,13 @@ public class Host implements Comparable {
     public Host(ProtoHost protoHost) {
         this.hostName = protoHost.host_name;
         this.results = new ArrayList<PingResult>(protoHost.results);
+        //default to true
+        this.showNotification = protoHost.show_notification == null || protoHost.show_notification;
     }
 
     public ProtoHost toProtoHost() {
         ProtoHost.Builder protoHostBuilder = new ProtoHost.Builder();
-        return protoHostBuilder.host_name(hostName).results(results).build();
+        return protoHostBuilder.host_name(hostName).results(results).show_notification(showNotification).build();
     }
 
     @Override
@@ -54,7 +59,7 @@ public class Host implements Comparable {
     }
 
     @Override
-    public int compareTo(Object another) {
+    public int compareTo(@NonNull Object another) {
         return this.toString().compareTo(another.toString());
     }
 
@@ -120,5 +125,13 @@ public class Host implements Comparable {
 
     public void setCurrentStatus(HostStatus currentStatus) {
         this.currentStatus = currentStatus;
+    }
+
+    public boolean isShowNotification() {
+        return showNotification;
+    }
+
+    public void setShowNotification(boolean showNotification) {
+        this.showNotification = showNotification;
     }
 }

@@ -130,7 +130,7 @@ public class HostService {
      */
     private void postNotification(Host host) {
         if (defaultSharedPrefs.getBoolean(context.getString(R.string.pref_key_show_unreachable_notifications), true) &&
-                host.getCurrentStatus().equals(HostStatus.unreachable)) {
+                host.isShowNotification() && host.getCurrentStatus().equals(HostStatus.unreachable)) {
 
             Intent intent = new Intent(context, HostDetailActivity.class);
             intent.putExtra(HostDetailFragment.HOST_KEY, host.getHostName());
@@ -240,6 +240,8 @@ public class HostService {
         hosts.add(host);
 
         saveHostsOverwriting(hosts);
+
+
     }
 
     /**

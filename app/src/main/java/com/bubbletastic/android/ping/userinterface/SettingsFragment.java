@@ -17,7 +17,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences);
+        addPreferencesFromResource(R.xml.app_preferences);
         refreshIntervalPref = (LongEditTextPreference) findPreference(getString(R.string.pref_key_global_refresh_interval));
         refreshPingCountPref = (LongEditTextPreference) findPreference(getString(R.string.pref_key_ping_refresh_count));
     }

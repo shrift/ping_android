@@ -180,17 +180,6 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
 
         addHostInput = (EditTextBackEvent) headerAddInputView.findViewById(R.id.host_list_add_input);
         addHostInput.setOnEditTextImeBackListener(this);
-//        addHostInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View v, boolean hasFocus) {
-//                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                if (v.hasFocus()) {
-//                    imm.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
-//                } else {
-//                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-//                }
-//            }
-//        });
         addHostInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
@@ -312,15 +301,6 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
                 listView.getPaddingTop(),
                 listView.getPaddingRight(),
                 0);
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-        //request focus shortly after showing the add host input.
-//                addHostInput.requestFocus();
-//                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.showSoftInput(addHostFab, InputMethodManager.SHOW_IMPLICIT);
-//            }
-//        }, 50);
     }
 
     private void scrollAddHostInputIntoView() {

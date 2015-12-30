@@ -3,6 +3,8 @@ package com.bubbletastic.android.ping.userinterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.bubbletastic.android.ping.R;
@@ -19,6 +21,8 @@ import com.bubbletastic.android.ping.R;
  */
 public class HostDetailActivity extends AppCompatActivity {
 
+    private String hostName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,42 +33,38 @@ public class HostDetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // savedInstanceState is non-null when there is fragment state
-        // saved from previous configurations of this activity
-        // (e.g. when rotating the screen from portrait to landscape).
-        // In this case, the fragment will automatically be re-added
-        // to its container so we don't need to manually add it.
-        // For more information, see the Fragments API guide at:
-        //
-        // http://developer.android.com/guide/components/fragments.html
-        //
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(HostDetailFragment.HOST_KEY,
-                    getIntent().getStringExtra(HostDetailFragment.HOST_KEY));
+            hostName = getIntent().getStringExtra(HostDetailFragment.HOST_KEY);
+            arguments.putString(HostDetailFragment.HOST_KEY, hostName);
             HostDetailFragment fragment = new HostDetailFragment();
             fragment.setArguments(arguments);
-            getFragmentManager().beginTransaction()
-                    .add(R.id.host_detail_container, fragment)
-                    .commit();
+            getFragmentManager().beginTransaction().add(R.id.host_detail_container, fragment).commit();
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.host_details_menu, menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            navigateUpTo(new Intent(this, HostListActivity.class));
-            return true;
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                Intent settingsIntent = new Intent(this, HostSettingsActivity.class);
+                settingsIntent.putExtra(HostDetailFragment.HOST_KEY, hostName);
+                startActivity(settingsIntent);
+                return true;
+            case android.R.id.home:
+                navigateUpTo(new Intent(this, HostListActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 }

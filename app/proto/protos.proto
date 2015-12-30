@@ -7,11 +7,13 @@ enum HostStatus {
     reachable = 1;
     unreachable = 2;
     updating = 3;
+    disconnected = 4;
 }
 
 message ProtoHost {
     optional string host_name = 1;
     repeated PingResult results = 2;
+    optional bool show_notification = 3 [default = true];
 }
 
 message PingResult {
