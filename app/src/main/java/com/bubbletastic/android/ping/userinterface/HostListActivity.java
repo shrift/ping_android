@@ -49,7 +49,7 @@ public class HostListActivity extends AppCompatActivity implements HostListCallb
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(HostDetailFragment.ARG_ITEM_ID, id);
+            arguments.putString(HostDetailFragment.HOST_KEY, id);
             HostDetailFragment fragment = new HostDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -60,7 +60,7 @@ public class HostListActivity extends AppCompatActivity implements HostListCallb
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, HostDetailActivity.class);
-            detailIntent.putExtra(HostDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(HostDetailFragment.HOST_KEY, id);
             startActivity(detailIntent);
         }
     }

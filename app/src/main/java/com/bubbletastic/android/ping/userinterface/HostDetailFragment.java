@@ -2,6 +2,7 @@ package com.bubbletastic.android.ping.userinterface;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.bubbletastic.android.ping.userinterface.view.HostViewHolder;
 import com.bubbletastic.android.ping.userinterface.view.PingResultAdapter;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,17 +30,17 @@ public class HostDetailFragment extends PingFragment {
      * The fragment argument representing the host ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String HOST_KEY = "host_key";
 
     /**
      * The dummy content this fragment is presenting.
      */
     private Host host;
-    private ListView listView;
     private PingResultAdapter adapter;
     private HostViewHolder hostViewHolder;
     private List<PingResult> results;
     private Handler handler;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -51,8 +53,8 @@ public class HostDetailFragment extends PingFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            String hostName = getArguments().getString(ARG_ITEM_ID);
+        if (getArguments().containsKey(HOST_KEY)) {
+            String hostName = getArguments().getString(HOST_KEY);
             host = getApp().getHostService().retrievePersistedHost(hostName);
         }
 
@@ -78,7 +80,12 @@ public class HostDetailFragment extends PingFragment {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                refreshResults();
+                if (adapter == null) {
+                    return;
+                }
+                results.clear();
+                results.addAll(host.getResults());
+                adapter.notifyDataSetChanged();
             }
         });
     }
@@ -88,6 +95,16 @@ public class HostDetailFragment extends PingFragment {
 
         View rootView = inflater.inflate(R.layout.fragment_host_detail, container, false);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.fragment_host_detail_swipe_refresh);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshHost();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         hostViewHolder = new HostViewHolder();
         hostViewHolder.indicator = rootView.findViewById(R.id.host_item_list_status_indicator);
         hostViewHolder.hostName = (TextView) rootView.findViewById(R.id.host_item_list_hostname);
@@ -95,8 +112,8 @@ public class HostDetailFragment extends PingFragment {
 
         updateHostHeader();
 
-        listView = (ListView) rootView.findViewById(R.id.list);
-        results = host.getResults();
+        ListView listView = (ListView) rootView.findViewById(R.id.list);
+        results = new ArrayList<PingResult>(host.getResults());
         adapter = new PingResultAdapter(getActivity().getApplicationContext(), results);
         listView.setAdapter(adapter);
 
@@ -112,12 +129,12 @@ public class HostDetailFragment extends PingFragment {
         hostViewHolder.updateHostStatusInfo(host);
     }
 
-    private void refreshResults() {
-        if (adapter == null) {
-            return;
-        }
-        results.clear();
-        results.addAll(host.getResults());
-        adapter.notifyDataSetChanged();
+    private void refreshHost() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getApp().getHostService().refreshHost(host);
+            }
+        }).start();
     }
 }

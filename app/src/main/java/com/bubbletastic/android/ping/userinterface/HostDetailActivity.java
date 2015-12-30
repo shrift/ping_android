@@ -42,8 +42,8 @@ public class HostDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(HostDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(HostDetailFragment.ARG_ITEM_ID));
+            arguments.putString(HostDetailFragment.HOST_KEY,
+                    getIntent().getStringExtra(HostDetailFragment.HOST_KEY));
             HostDetailFragment fragment = new HostDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
