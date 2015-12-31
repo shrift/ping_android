@@ -1,5 +1,6 @@
 package com.bubbletastic.android.ping.userinterface;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -44,6 +45,7 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     private static HostListCallbacks dummyCallbacks = new HostListCallbacks() {
         @Override
         public void onItemSelected(String id) {
+            Log.d("HostListFragment", "Dummy onItemSelected callback.");
         }
     };
 
@@ -84,7 +86,17 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        doOnAttach(context);
+    }
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        //this version on onAttach was deprecated in api 23, so we still need to implement it to support back to 21.
+        doOnAttach(activity);
+    }
 
+    private void doOnAttach(Context context) {
         // Activities containing this fragment must implement its callbacks.
         if (!(context instanceof HostListCallbacks)) {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
