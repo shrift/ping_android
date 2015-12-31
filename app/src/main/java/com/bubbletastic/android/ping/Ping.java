@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.bubbletastic.android.ping.service.HostService;
+import com.bubbletastic.android.ping.service.HostServiceImpl;
 import com.bubbletastic.android.ping.service.RefreshHostsJobService;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
@@ -29,7 +30,7 @@ public class Ping extends Application implements SharedPreferences.OnSharedPrefe
         super.onCreate();
 
         bus = new Bus(ThreadEnforcer.ANY);
-        hostService = HostService.getInstance(this);
+        hostService = HostServiceImpl.getInstance(this);
 
         //schedule the update hosts job
         jobScheduler = ((JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE));
