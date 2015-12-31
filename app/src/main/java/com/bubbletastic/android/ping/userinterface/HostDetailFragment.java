@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bubbletastic.android.ping.Host;
+import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.R;
 import com.bubbletastic.android.ping.model.proto.PingResult;
 import com.bubbletastic.android.ping.userinterface.view.HostViewHolder;

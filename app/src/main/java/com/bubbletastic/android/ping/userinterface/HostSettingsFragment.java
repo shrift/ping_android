@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 
-import com.bubbletastic.android.ping.Host;
+import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.Ping;
 import com.bubbletastic.android.ping.R;
 

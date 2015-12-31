@@ -1,4 +1,4 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.service;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -12,6 +12,9 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 
+import com.bubbletastic.android.ping.Ping;
+import com.bubbletastic.android.ping.R;
+import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.model.proto.HostStatus;
 import com.bubbletastic.android.ping.model.proto.HostsContainer;
 import com.bubbletastic.android.ping.model.proto.PingResult;

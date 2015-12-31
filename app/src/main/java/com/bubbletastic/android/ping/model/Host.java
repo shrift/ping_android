@@ -1,4 +1,4 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.model;
 
 import android.support.annotation.NonNull;
 

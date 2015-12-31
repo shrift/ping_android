@@ -24,7 +24,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.bubbletastic.android.ping.Host;
+import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.R;
 import com.bubbletastic.android.ping.userinterface.view.EditTextBackEvent;
 import com.bubbletastic.android.ping.userinterface.view.EditTextImeBackListener;

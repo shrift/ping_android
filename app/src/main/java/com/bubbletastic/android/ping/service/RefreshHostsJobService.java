@@ -1,8 +1,10 @@
-package com.bubbletastic.android.ping;
+package com.bubbletastic.android.ping.service;
 
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 
+import com.bubbletastic.android.ping.Ping;
+import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.userinterface.HostsUpdating;
 
 import java.util.Collections;

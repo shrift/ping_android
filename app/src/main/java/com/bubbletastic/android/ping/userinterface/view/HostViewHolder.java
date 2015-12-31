@@ -3,7 +3,7 @@ package com.bubbletastic.android.ping.userinterface.view;
 import android.view.View;
 import android.widget.TextView;
 
-import com.bubbletastic.android.ping.Host;
+import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.R;
 
 /**

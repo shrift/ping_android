@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.bubbletastic.android.ping.service.HostService;
+import com.bubbletastic.android.ping.service.RefreshHostsJobService;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 
