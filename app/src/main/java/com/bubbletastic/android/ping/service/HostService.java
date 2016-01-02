@@ -11,6 +11,7 @@ import java.util.List;
  * Created by brendanmartens on 12/31/15.
  */
 public interface HostService {
+
     /**
      * This method will check that the passed host is reachable as many times as configured to count as "refreshed".
      * This operation performs calls on the network and should not be performed on the main thread.
@@ -19,8 +20,6 @@ public interface HostService {
      * @return The refreshed Host.
      */
     Host refreshHost(Host host);
-
-    Integer getMean(int[] times);
 
     /**
      * Shows notifications for hosts depending on preferences.
@@ -38,17 +37,6 @@ public interface HostService {
      * @return The PingResult from pinging the Host.
      */
     PingResult pingHost(Host host, int timeout);
-
-    /**
-     * This is here because it's easier to test this way. >:(
-     * @param address
-     * @param timeout
-     * @return
-     * @throws IOException
-     */
-    boolean doPing(InetAddress address, int timeout) throws IOException;
-
-    boolean isNetworkAvailable();
 
     /**
      * This method updates a persisted host, but will not add the host if it does not already exist.
@@ -113,4 +101,25 @@ public interface HostService {
      * @param hosts The hosts to save, overwrites existing hosts.
      */
     void saveHostsOverwriting(List<Host> hosts);
+
+    /**
+     * This is here because it's easier to test this way.
+     */
+    Integer getMean(int[] times);
+
+    /**
+     * This is here because it's easier to test this way.
+     */
+    boolean isNetworkAvailable();
+
+    /**
+     * This is here because it's easier to test this way.
+     *
+     * @param address
+     * @param timeout
+     * @return
+     * @throws IOException
+     */
+    boolean doPing(InetAddress address, int timeout) throws IOException;
+
 }
