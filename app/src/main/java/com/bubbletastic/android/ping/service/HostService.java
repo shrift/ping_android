@@ -103,17 +103,17 @@ public interface HostService {
     void saveHostsOverwriting(List<Host> hosts);
 
     /**
-     * This is here because it's easier to test this way.
+     * This is here to ease testing.
      */
     Integer getMean(int[] times);
 
     /**
-     * This is here because it's easier to test this way.
+     * This is here to ease testing.
      */
     boolean isNetworkAvailable();
 
     /**
-     * This is here because it's easier to test this way.
+     * This is here to ease testing.
      *
      * @param address
      * @param timeout
