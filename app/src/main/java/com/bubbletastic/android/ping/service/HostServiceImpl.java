@@ -39,6 +39,7 @@ public class HostServiceImpl implements HostService {
     private static HostServiceImpl instance;
 
     private Context context;
+    private Ping ping;
     private SharedPreferences appPrefs;
     private SharedPreferences defaultSharedPrefs;
 
@@ -49,6 +50,7 @@ public class HostServiceImpl implements HostService {
         if (instance == null) {
             instance = new HostServiceImpl();
             instance.context = context;
+            instance.ping = (Ping) context.getApplicationContext();
             instance.appPrefs = instance.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             instance.defaultSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         }
@@ -57,53 +59,51 @@ public class HostServiceImpl implements HostService {
 
     @Override
     public Host refreshHost(Host host) {
-        Ping ping = (Ping) context;
 
         HostStatus status = HostStatus.updating;
         host.setCurrentStatus(status);
         //Post the host so UI can get the updating status.
         ping.getBus().post(host);
 
-        InetAddress address = null;
-        if (isNetworkAvailable()) {
-            try {
-                address = InetAddress.getByName(host.getHostName());
-            } catch (UnknownHostException e) {
-                System.err.println("Unknown host " + host.getHostName());
-                status = HostStatus.unreachable;
-            }
-        } else {
-            status = HostStatus.disconnected;
-        }
-
-        int attempts = (int) defaultSharedPrefs.getLong(
-                context.getString(R.string.pref_key_ping_refresh_count),
-                context.getResources().getInteger(R.integer.default_ping_refresh_count));
-
-        int[] times = new int[attempts];
+        //Setup time for use later when we return the final results.
         Integer time = null;
-        if (address != null) {
-            for (int i = 0; i < attempts; i++) {
-                PingResult pingResult = pingHost(host, 1000);
-                status = pingResult.status;
 
-                if (!status.equals(HostStatus.reachable)) {
-                    break;
+        try {
+            InetAddress address = null;
+            if (isNetworkAvailable()) {
+                try {
+                    address = InetAddress.getByName(host.getHostName());
+                } catch (UnknownHostException e) {
+                    System.err.println("Unknown host " + host.getHostName());
+                    status = HostStatus.unreachable;
                 }
-
-                times[i] = pingResult.round_trip_avg;
+            } else {
+                status = HostStatus.disconnected;
             }
 
-            //Calculate the average round trip time if more than one attempt was made.
-            if (times.length > 0) {
-                int sum = 0;
-                for (int attempt : times) {
-                    sum += attempt;
+            int attempts = (int) defaultSharedPrefs.getLong(
+                    context.getString(R.string.pref_key_ping_refresh_count),
+                    context.getResources().getInteger(R.integer.default_ping_refresh_count));
+
+            int[] times = new int[attempts];
+            if (address != null) {
+                for (int i = 0; i < attempts; i++) {
+                    PingResult pingResult = pingHost(host, 1000);
+                    status = pingResult.status;
+
+                    if (!status.equals(HostStatus.reachable)) {
+                        break;
+                    }
+
+                    times[i] = pingResult.round_trip_avg != null ? pingResult.round_trip_avg : 0;
                 }
-                if (sum > 0) {
-                    time = (int) ((double) sum / (double) times.length);
-                }
+
+                //Calculate the average round trip time for all attempts.
+                time = getMean(times);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HostStatus.unknown;
         }
 
         host.setCurrentStatus(status);
@@ -121,12 +121,22 @@ public class HostServiceImpl implements HostService {
         return host;
     }
 
-    /**
-     * Shows notifications for hosts depending on preferences.
-     *
-     * @param host The host to evaluate for notification.
-     */
-    private void postNotification(Host host) {
+    @Override
+    public Integer getMean(int[] times) {
+        if (times != null && times.length > 0) {
+            int sum = 0;
+            for (int attempt : times) {
+                sum += attempt;
+            }
+            if (sum > 0) {
+                return (int) ((double) sum / (double) times.length);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void postNotification(Host host) {
         if (defaultSharedPrefs.getBoolean(context.getString(R.string.pref_key_show_unreachable_notifications), true) &&
                 host.isShowNotification() && host.getCurrentStatus().equals(HostStatus.unreachable)) {
 
@@ -146,15 +156,11 @@ public class HostServiceImpl implements HostService {
         }
     }
 
-    /**
-     * This method will ping the passed host.
-     * This operation performs calls on the network and should not be performed on the main thread.
-     *
-     * @param host    The Host to ping.
-     * @param timeout How long to wait for a ping response before giving up.
-     * @return The PingResult from pinging the Host.
-     */
-    private PingResult pingHost(Host host, int timeout) {
+    @Override
+    public PingResult pingHost(Host host, int timeout) {
+        if (host == null) {
+            return null;
+        }
         HostStatus status = HostStatus.unknown;
         InetAddress address = null;
         Integer time = null;
@@ -184,7 +190,8 @@ public class HostServiceImpl implements HostService {
         return new PingResult.Builder().pinged_at(System.currentTimeMillis()).status(status).round_trip_avg(time).build();
     }
 
-    private boolean isNetworkAvailable() {
+    @Override
+    public boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
@@ -269,13 +276,9 @@ public class HostServiceImpl implements HostService {
         return hosts;
     }
 
-    /**
-     * Protocol Buffers are used to store data so that we have a schema that can evolve, avoiding nasty upgrade issues if the Host objects change.
-     *
-     * @param hosts
-     */
     @SuppressLint("CommitPrefEdits")
-    private synchronized void saveHostsOverwriting(List<Host> hosts) {
+    @Override
+    public synchronized void saveHostsOverwriting(List<Host> hosts) {
         List<ProtoHost> protoHosts = new ArrayList<ProtoHost>();
         for (Host host : hosts) {
             protoHosts.add(host.toProtoHost());

@@ -14,6 +14,12 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This model acts as a convenience layer between the application code and the ProtoHost object which is what is actually persisted.
+ * Not every proto model was abstracted, but given how much the application deals with hosts the more friendly naming and additional abstraction layer
+ * for convenience methods made it worth the extra complexity.
+ * (And modifications directly on ProtoHost get destroyed anytime the proto models are re-generated, so it is not a good place to add convenience methods.
+ */
 public class Host implements Comparable {
 
     private String hostName;

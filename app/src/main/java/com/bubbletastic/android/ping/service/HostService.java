@@ -1,6 +1,9 @@
 package com.bubbletastic.android.ping.service;
 
+import android.annotation.SuppressLint;
+
 import com.bubbletastic.android.ping.model.Host;
+import com.bubbletastic.android.ping.model.proto.PingResult;
 
 import java.util.List;
 
@@ -16,6 +19,27 @@ public interface HostService {
      * @return The refreshed Host.
      */
     Host refreshHost(Host host);
+
+    Integer getMean(int[] times);
+
+    /**
+     * Shows notifications for hosts depending on preferences.
+     *
+     * @param host The host to evaluate for notification.
+     */
+    void postNotification(Host host);
+
+    /**
+     * This method will ping the passed host.
+     * This operation performs calls on the network and should not be performed on the main thread.
+     *
+     * @param host    The Host to ping.
+     * @param timeout How long to wait for a ping response before giving up.
+     * @return The PingResult from pinging the Host.
+     */
+    PingResult pingHost(Host host, int timeout);
+
+    boolean isNetworkAvailable();
 
     /**
      * This method updates a persisted host, but will not add the host if it does not already exist.
@@ -73,4 +97,12 @@ public interface HostService {
      * @return
      */
     List<Host> retrievePersistedHosts();
+
+    /**
+     * Protocol Buffers are used to store data so that we have a schema that can evolve, avoiding nasty upgrade issues if the Host objects change.
+     *
+     * @param hosts
+     */
+    @SuppressLint("CommitPrefEdits")
+    void saveHostsOverwriting(List<Host> hosts);
 }
