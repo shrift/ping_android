@@ -113,6 +113,10 @@ public class HostServiceTest extends InstrumentationTestCase {
         assertEquals(HostStatus.unknown, returnedHost.getCurrentStatus());
     }
 
+    /**
+     * Checks that pingHost returns reachable given the correct conditions.
+     * @throws IOException
+     */
     @Test
     public void checkPingHostReachable() throws IOException {
         Host host = getTestHost();
@@ -124,6 +128,10 @@ public class HostServiceTest extends InstrumentationTestCase {
         assertEquals(HostStatus.reachable, pingResult.status);
     }
 
+    /**
+     * Checks that pingHost returns unreachable given the correct conditions.
+     * @throws IOException
+     */
     @Test
     public void checkPingHostUnreachable() throws IOException {
         Host host = getTestHost();
@@ -133,6 +141,10 @@ public class HostServiceTest extends InstrumentationTestCase {
         assertEquals(HostStatus.unreachable, pingResult.status);
     }
 
+    /**
+     * Checks that pingHost returns unknown given the correct conditions.
+     * @throws IOException
+     */
     @Test
     public void checkPingHostUnknown() throws IOException {
         Host host = getTestHost();
@@ -143,6 +155,10 @@ public class HostServiceTest extends InstrumentationTestCase {
         assertEquals(HostStatus.unknown, pingResult.status);
     }
 
+    /**
+     * Checks that pingHost returns disconnected given the correct conditions.
+     * @throws IOException
+     */
     @Test
     public void checkPingHostDisconnected() throws IOException {
         Host host = getTestHost();
