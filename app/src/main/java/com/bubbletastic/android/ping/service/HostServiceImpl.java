@@ -276,8 +276,8 @@ public class HostServiceImpl implements HostService {
         return hosts;
     }
 
-    @SuppressLint("CommitPrefEdits")
     @Override
+    @SuppressLint("CommitPrefEdits")
     public synchronized void saveHostsOverwriting(List<Host> hosts) {
         List<ProtoHost> protoHosts = new ArrayList<ProtoHost>();
         for (Host host : hosts) {

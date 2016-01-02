@@ -1,7 +1,5 @@
 package com.bubbletastic.android.ping.service;
 
-import android.annotation.SuppressLint;
-
 import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.model.proto.PingResult;
 
@@ -86,7 +84,7 @@ public interface HostService {
      * This method retrieves a host from persistent storage.
      * This method may block if a write operation is in progress and therefore should not be called on the main thread.
      *
-     * @return
+     * @return The retrieved host or null if it could not be found.
      */
     Host retrievePersistedHost(String hostName);
 
@@ -94,15 +92,14 @@ public interface HostService {
      * This method retrieves hosts from persistent storage.
      * This method may block if a write operation is in progress and therefore should not be called on the main thread.
      *
-     * @return
+     * @return The List of all persisted hosts, or an empty List if there are not any persisted hosts.
      */
     List<Host> retrievePersistedHosts();
 
     /**
      * Protocol Buffers are used to store data so that we have a schema that can evolve, avoiding nasty upgrade issues if the Host objects change.
      *
-     * @param hosts
+     * @param hosts The hosts to save, overwrites existing hosts.
      */
-    @SuppressLint("CommitPrefEdits")
     void saveHostsOverwriting(List<Host> hosts);
 }
