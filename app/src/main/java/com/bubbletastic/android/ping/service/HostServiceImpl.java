@@ -59,6 +59,9 @@ public class HostServiceImpl implements HostService {
 
     @Override
     public Host refreshHost(Host host) {
+        if (host == null) {
+            return null;
+        }
 
         HostStatus status = HostStatus.updating;
         host.setCurrentStatus(status);
@@ -92,7 +95,7 @@ public class HostServiceImpl implements HostService {
                     status = pingResult.status;
 
                     if (!status.equals(HostStatus.reachable)) {
-                        break;
+                        continue;
                     }
 
                     times[i] = pingResult.round_trip_avg != null ? pingResult.round_trip_avg : 0;
@@ -174,20 +177,28 @@ public class HostServiceImpl implements HostService {
         if (address != null) {
             try {
                 long startTime = System.currentTimeMillis();
-                boolean reachable = address.isReachable(timeout);
+                boolean reachable = doPing(address, timeout);
                 long endTime = System.currentTimeMillis();
-                if (reachable) {
-                    status = HostStatus.reachable;
-                } else {
-                    status = HostStatus.unreachable;
-                }
+                status = reachable ? HostStatus.reachable : HostStatus.unreachable;
                 time = (int) (endTime - startTime);
             } catch (IOException e) {
-                status = HostStatus.unreachable;
+                //Unreachable status should only be returned above if it was a clean return from the InetAddress.isReachable method, not if there were other issues.
+
+                //Check that we have an internet connection to validate that the unreachable status is accurate.
+                if (isNetworkAvailable()) {
+                    status = HostStatus.unknown;
+                } else {
+                    status = HostStatus.disconnected;
+                }
             }
         }
 
         return new PingResult.Builder().pinged_at(System.currentTimeMillis()).status(status).round_trip_avg(time).build();
+    }
+
+    @Override
+    public boolean doPing(InetAddress address, int timeout) throws IOException {
+        return address != null && address.isReachable(timeout);
     }
 
     @Override

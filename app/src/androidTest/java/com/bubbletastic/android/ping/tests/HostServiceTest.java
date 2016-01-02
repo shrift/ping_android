@@ -13,6 +13,9 @@ import com.bubbletastic.android.ping.service.HostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
+import java.net.InetAddress;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.spy;
@@ -43,7 +46,7 @@ public class HostServiceTest extends InstrumentationTestCase {
      */
     @Test
     public void checkRefreshHostHostName() {
-        Host host = getReachableTestHost();
+        Host host = getTestHost();
         String originalHostName = host.getHostName();
         Host returnedHost = spyService.refreshHost(host);
 
@@ -58,7 +61,7 @@ public class HostServiceTest extends InstrumentationTestCase {
     public void checkRefreshHostStatusDisconnected() {
         when(spyService.isNetworkAvailable()).thenReturn(false);
 
-        Host host = getReachableTestHost();
+        Host host = getTestHost();
         Host returnedHost = spyService.refreshHost(host);
         assertNotNull(returnedHost);
 
@@ -69,8 +72,8 @@ public class HostServiceTest extends InstrumentationTestCase {
      * Checks that if a successful ping occurred, refreshHost returns a reachable status.
      */
     @Test
-    public void checkRefreshHostReachableStatus() {
-        Host host = getReachableTestHost();
+    public void checkRefreshHostReachableStatus() throws IOException {
+        Host host = getTestHost();
         when(spyService.isNetworkAvailable()).thenReturn(true);
         when(spyService.pingHost(any(Host.class), anyInt())).thenReturn(getPingResultWithStatus(HostStatus.reachable));
 
@@ -85,7 +88,7 @@ public class HostServiceTest extends InstrumentationTestCase {
      */
     @Test
     public void checkRefreshHostUnreachableStatus() {
-        Host host = getReachableTestHost();
+        Host host = getTestHost();
         when(spyService.isNetworkAvailable()).thenReturn(true);
         when(spyService.pingHost(any(Host.class), anyInt())).thenReturn(getPingResultWithStatus(HostStatus.unreachable));
 
@@ -100,7 +103,7 @@ public class HostServiceTest extends InstrumentationTestCase {
      */
     @Test
     public void checkRefreshHostUnknownStatus() {
-        Host host = getReachableTestHost();
+        Host host = getTestHost();
         when(spyService.isNetworkAvailable()).thenReturn(true);
         when(spyService.pingHost(any(Host.class), anyInt())).thenThrow(new RuntimeException());
 
@@ -108,6 +111,46 @@ public class HostServiceTest extends InstrumentationTestCase {
         assertNotNull(returnedHost);
 
         assertEquals(HostStatus.unknown, returnedHost.getCurrentStatus());
+    }
+
+    @Test
+    public void checkPingHostReachable() throws IOException {
+        Host host = getTestHost();
+        //Set a host name that should be unreachable just to help validate our mock is overriding the return result.
+        host.setHostName("sdjklsfdjsdfjlksdfjsdfjlksdfjlkfsd.sjklssdf");
+        when(spyService.doPing(any(InetAddress.class), anyInt())).thenReturn(true);
+
+        PingResult pingResult = spyService.pingHost(host, 789);
+        assertEquals(HostStatus.reachable, pingResult.status);
+    }
+
+    @Test
+    public void checkPingHostUnreachable() throws IOException {
+        Host host = getTestHost();
+        when(spyService.doPing(any(InetAddress.class), anyInt())).thenReturn(false);
+
+        PingResult pingResult = spyService.pingHost(host, 789);
+        assertEquals(HostStatus.unreachable, pingResult.status);
+    }
+
+    @Test
+    public void checkPingHostUnknown() throws IOException {
+        Host host = getTestHost();
+        when(spyService.doPing(any(InetAddress.class), anyInt())).thenThrow(new IOException());
+        when(spyService.isNetworkAvailable()).thenReturn(true);
+
+        PingResult pingResult = spyService.pingHost(host, 789);
+        assertEquals(HostStatus.unknown, pingResult.status);
+    }
+
+    @Test
+    public void checkPingHostDisconnected() throws IOException {
+        Host host = getTestHost();
+        when(spyService.doPing(any(InetAddress.class), anyInt())).thenThrow(new IOException());
+        when(spyService.isNetworkAvailable()).thenReturn(false);
+
+        PingResult pingResult = spyService.pingHost(host, 789);
+        assertEquals(HostStatus.disconnected, pingResult.status);
     }
 
     /**
@@ -133,7 +176,7 @@ public class HostServiceTest extends InstrumentationTestCase {
         return new PingResult.Builder().pinged_at(System.currentTimeMillis()).status(status).round_trip_avg(56).build();
     }
 
-    private Host getReachableTestHost() {
+    private Host getTestHost() {
         return new Host("google-public-dns-a.google.com");
     }
 }

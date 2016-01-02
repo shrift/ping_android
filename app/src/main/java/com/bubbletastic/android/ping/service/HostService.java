@@ -3,6 +3,8 @@ package com.bubbletastic.android.ping.service;
 import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.model.proto.PingResult;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.List;
 
 /**
@@ -36,6 +38,15 @@ public interface HostService {
      * @return The PingResult from pinging the Host.
      */
     PingResult pingHost(Host host, int timeout);
+
+    /**
+     * This is here because it's easier to test this way. >:(
+     * @param address
+     * @param timeout
+     * @return
+     * @throws IOException
+     */
+    boolean doPing(InetAddress address, int timeout) throws IOException;
 
     boolean isNetworkAvailable();
 
