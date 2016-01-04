@@ -55,6 +55,9 @@
             android:name=".service.RefreshHostsJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="bc82d437891903f24fb3599d479c75abfde06606" />
     </application>
 
 </manifest>

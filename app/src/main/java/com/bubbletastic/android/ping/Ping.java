@@ -11,8 +11,10 @@ import android.preference.PreferenceManager;
 import com.bubbletastic.android.ping.service.HostService;
 import com.bubbletastic.android.ping.service.HostServiceImpl;
 import com.bubbletastic.android.ping.service.RefreshHostsJobService;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by brendanmartens on 4/13/15.
@@ -28,6 +30,7 @@ public class Ping extends Application implements SharedPreferences.OnSharedPrefe
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         bus = new Bus(ThreadEnforcer.ANY);
         hostService = HostServiceImpl.getInstance(this);
