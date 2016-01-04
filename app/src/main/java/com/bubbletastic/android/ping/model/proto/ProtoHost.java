@@ -24,7 +24,7 @@ public final class ProtoHost extends Message<ProtoHost, ProtoHost.Builder> {
 
   public static final String DEFAULT_HOST_NAME = "";
 
-  public static final Boolean DEFAULT_SHOW_NOTIFICATION = true;
+  public static final Boolean DEFAULT_SHOW_NOTIFICATION = false;
 
   @WireField(
       tag = 1,
