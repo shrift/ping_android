@@ -8,36 +8,36 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
-    <compatible-screens>
-       
-        <!-- all small size screens -->
-        <screen
-            android:screenDensity="ldpi"
-            android:screenSize="small"/>
-        <screen
-            android:screenDensity="mdpi"
-            android:screenSize="small"/>
-        <screen
-            android:screenDensity="hdpi"
-            android:screenSize="small"/>
-        <screen
-            android:screenDensity="xhdpi"
-            android:screenSize="small"/>
+    <!--<compatible-screens>-->
+       <!-- -->
+        <!--&lt;!&ndash; all small size screens &ndash;&gt;-->
+        <!--<screen-->
+            <!--android:screenDensity="ldpi"-->
+            <!--android:screenSize="small"/>-->
+        <!--<screen-->
+            <!--android:screenDensity="mdpi"-->
+            <!--android:screenSize="small"/>-->
+        <!--<screen-->
+            <!--android:screenDensity="hdpi"-->
+            <!--android:screenSize="small"/>-->
+        <!--<screen-->
+            <!--android:screenDensity="xhdpi"-->
+            <!--android:screenSize="small"/>-->
 
-        <!-- all normal size screens -->
-        <screen
-            android:screenDensity="ldpi"
-            android:screenSize="normal"/>
-        <screen
-            android:screenDensity="mdpi"
-            android:screenSize="normal"/>
-        <screen
-            android:screenDensity="hdpi"
-            android:screenSize="normal"/>
-        <screen
-            android:screenDensity="xhdpi"
-            android:screenSize="normal"/>
-    </compatible-screens>
+        <!--&lt;!&ndash; all normal size screens &ndash;&gt;-->
+        <!--<screen-->
+            <!--android:screenDensity="ldpi"-->
+            <!--android:screenSize="normal"/>-->
+        <!--<screen-->
+            <!--android:screenDensity="mdpi"-->
+            <!--android:screenSize="normal"/>-->
+        <!--<screen-->
+            <!--android:screenDensity="hdpi"-->
+            <!--android:screenSize="normal"/>-->
+        <!--<screen-->
+            <!--android:screenDensity="xhdpi"-->
+            <!--android:screenSize="normal"/>-->
+    <!--</compatible-screens>-->
 
     <application
 
