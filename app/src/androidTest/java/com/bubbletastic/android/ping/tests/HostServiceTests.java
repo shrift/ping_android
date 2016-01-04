@@ -25,12 +25,12 @@ import static org.mockito.Mockito.when;
  * Created by brendanmartens on 12/31/15.
  */
 @RunWith(AndroidJUnit4.class)
-public class HostServiceTest extends InstrumentationTestCase {
+public class HostServiceTests extends InstrumentationTestCase {
 
     private Ping ping;
     private HostService spyService;
 
-    public HostServiceTest() {
+    public HostServiceTests() {
         ping = (Ping) InstrumentationRegistry.getTargetContext().getApplicationContext();
         spyService = spy(ping.getHostService());
     }
