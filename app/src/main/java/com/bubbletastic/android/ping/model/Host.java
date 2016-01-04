@@ -25,7 +25,7 @@ public class Host implements Comparable {
     private String hostName;
     private List<PingResult> results = new ArrayList<>();
     private HostStatus currentStatus;
-    private boolean showNotification = true;
+    private boolean showNotification;
 
     public Host() {
     }
