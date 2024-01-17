@@ -2,10 +2,11 @@ package com.bubbletastic.android.ping.userinterface;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bubbletastic.android.ping.R;
 
@@ -53,18 +54,16 @@ public class HostDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (item.getItemId()) {
-            case R.id.menu_settings:
-                Intent settingsIntent = new Intent(this, HostSettingsActivity.class);
-                settingsIntent.putExtra(HostDetailFragment.HOST_KEY, hostName);
-                startActivity(settingsIntent);
-                return true;
-            case android.R.id.home:
-                navigateUpTo(new Intent(this, HostListActivity.class));
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_settings) {
+            Intent settingsIntent = new Intent(this, HostSettingsActivity.class);
+            settingsIntent.putExtra(HostDetailFragment.HOST_KEY, hostName);
+            startActivity(settingsIntent);
+            return true;
+        } else if (itemId == android.R.id.home) {
+            navigateUpTo(new Intent(this, HostListActivity.class));
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -1,6 +1,6 @@
 package com.bubbletastic.android.ping.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.bubbletastic.android.ping.model.proto.HostStatus;
 import com.bubbletastic.android.ping.model.proto.PingResult;

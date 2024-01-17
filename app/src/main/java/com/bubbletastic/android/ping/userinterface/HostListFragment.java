@@ -5,9 +5,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -25,11 +22,14 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.bubbletastic.android.ping.model.Host;
 import com.bubbletastic.android.ping.R;
 import com.bubbletastic.android.ping.userinterface.view.EditTextBackEvent;
 import com.bubbletastic.android.ping.userinterface.view.EditTextImeBackListener;
 import com.bubbletastic.android.ping.userinterface.view.HostAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -147,7 +147,6 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
         return new HostAdapter(getActivity(), hosts);
     }
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_host_list, container, false);
@@ -222,14 +221,12 @@ public class HostListFragment extends PingFragment implements EditTextImeBackLis
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 // Respond to clicks on the actions in the CAB
-                switch (item.getItemId()) {
-                    case R.id.menu_delete:
-                        deleteSelectedHosts();
-                        mode.finish(); // Action picked, so close the CAB
-                        return true;
-                    default:
-                        return false;
+                if (item.getItemId() == R.id.menu_delete) {
+                    deleteSelectedHosts();
+                    mode.finish(); // Action picked, so close the CAB
+                    return true;
                 }
+                return false;
             }
 
             @Override

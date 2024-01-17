@@ -5,7 +5,7 @@
 
     <include layout="@layout/host_list_item"/>
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/fragment_host_detail_swipe_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,5 +16,5 @@
             android:layout_height="match_parent"
             android:choiceMode="none"
             android:divider="@null"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>
