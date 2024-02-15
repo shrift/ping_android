@@ -12,7 +12,7 @@ android {
         applicationId = "com.bubbletastic.android.ping"
         minSdk = 23
         targetSdk = 34
-        versionCode = 4
+        versionCode = 5
         versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

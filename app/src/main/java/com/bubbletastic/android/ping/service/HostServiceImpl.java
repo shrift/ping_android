@@ -148,7 +148,7 @@ public class HostServiceImpl implements HostService {
 
             Notification notification = new Notification.Builder(context)
                     .setContentTitle(context.getString(R.string.host_unreachable_notification_title).replace("$hostName$", host.getHostName()))
-                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, 0))
+                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE))
                     .setSmallIcon(R.drawable.ic_stat_name)
                     .setAutoCancel(true)
                     .build();
